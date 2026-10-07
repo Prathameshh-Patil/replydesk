@@ -1,0 +1,5 @@
+# Libraries the API needs to run (installed in the Docker image).
+fastapi==0.142.3
+uvicorn[standard]==0.54.0
+pydantic==2.13.5
+pydantic-settings==2.15.0
