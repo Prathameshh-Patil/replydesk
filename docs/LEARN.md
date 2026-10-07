@@ -43,3 +43,27 @@ One section per phase: what was built, why it is designed that way, and what the
 3. *What does an empty `exp_order_id` cell mean, and why does it matter?* The correct answer is `null`; if the Extractor returns a value there, it invented one, which is the failure we most want to catch.
 4. *Why include prompt-injection messages?* Customer text reaches the AI, so a customer can try to give it orders; I need proof the system ignores them and that a human still sees everything.
 5. *Why is the business fictional?* A demo should not impersonate a real company's support desk, and a fictional store lets me write its policy myself.
+
+## Phase 2: Back-end skeleton, Docker and CI
+
+**What we built.** A FastAPI app with one route, `GET /health`; settings read from environment variables; a Dockerfile for the API; a `docker-compose.yml` that starts the API and PostgreSQL together; one pytest test; ruff for linting and formatting; and a GitHub Actions workflow that lints and tests every pull request.
+
+**How to run it.** `cp .env.example .env`, then `docker compose up --build`. Open http://localhost:8010/health and http://localhost:8010/docs. Tests: `cd backend && python3.12 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt && .venv/bin/pytest`.
+
+**Why it is designed this way.**
+- **Settings in one class** (`app/core/settings.py`): every config value has one home, a type and a default. Change the environment, not the code, to point at a different database.
+- **`/health`** lets Docker, CI and the hosting platform ask "are you alive?" without logging in.
+- **Docker** packages Python 3.12 and exact library versions, so my laptop, CI and the server run the same thing. The Dockerfile installs libraries *before* copying code, so a code change rebuilds in seconds (Docker reuses the cached library layer).
+- **Compose** starts the database first and waits for its health check before starting the API (`depends_on: condition: service_healthy`). Inside Compose the API reaches the database by its service name `db`, not `localhost`.
+- **Ports 8010 and 5442**: my machine already runs other projects on 8000 and 5432. The first time, `/health` answered from *another app* on port 8000; I caught it because the OpenAPI title said "Slotwise". Lesson: check *what* answered, not just *that* something answered.
+- **Exact version pins** (`fastapi==0.142.3`): a fresh install next month gets the same code, so CI failures mean my code changed, not a library.
+- **CI** gives every PR a green or red mark before merge, so `main` never holds broken code.
+
+**Alternatives.** Run Postgres installed directly on the Mac: no Docker needed, but the version and setup differ per machine. Poetry or uv instead of `requirements.txt`: better lock files, but one more tool to explain; plain pip is enough here. Flask or Django instead of FastAPI: Flask lacks built-in validation and automatic docs, and Django brings a lot I won't use.
+
+**Self-check.**
+1. *Image vs container?* An image is the frozen package (code + Python + libraries); a container is a running instance of it.
+2. *Why does the API use `db` as the database host inside Compose but `localhost` from my laptop?* Compose puts containers on a private network where each service is reachable by its name; from the laptop you go through the published port on localhost.
+3. *Why copy `requirements.txt` before the code in the Dockerfile?* Docker caches each step; libraries change rarely, so code-only changes skip the slow install.
+4. *What does CI run, and when?* On every PR and every push to `main`: `ruff check`, `ruff format --check`, and `pytest`.
+5. *Why read settings from environment variables?* The same code runs locally, in CI and in production with different values, and secrets stay out of the code.

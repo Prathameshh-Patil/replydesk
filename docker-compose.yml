@@ -1,0 +1,36 @@
+# Local development: the API and a PostgreSQL database, started with `docker compose up`.
+# Values come from .env (copy .env.example); the defaults after ":-" are used if .env is missing.
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-replydesk}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-replydesk}
+      POSTGRES_DB: ${POSTGRES_DB:-replydesk}
+    ports:
+      # Host port 5442 (not 5432) so it does not clash with other local Postgres servers.
+      - "${DB_PORT:-5442}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-replydesk}"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      ENVIRONMENT: local
+      # Inside Compose the database's host name is the service name "db".
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-replydesk}:${POSTGRES_PASSWORD:-replydesk}@db:5432/${POSTGRES_DB:-replydesk}
+    ports:
+      # Open the API on the host at port 8010 (inside the container it listens on 8000).
+      - "${API_PORT:-8010}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
