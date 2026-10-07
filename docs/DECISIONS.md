@@ -16,3 +16,13 @@ One line per decision, with the reason.
 - Local host ports 8010 (API) and 5442 (Postgres), configurable in `.env`: 8000 and 5432 are used by other projects on this machine.
 - `httpx2` instead of `httpx` for tests: Starlette's TestClient deprecated `httpx`.
 - Postgres 17 in Docker for local development: same database as production, no local install.
+- Sync SQLAlchemy (not async): simpler to read and debug; FastAPI runs sync routes in a thread pool.
+- Integer IDs: simple and readable in URLs; nothing here needs unguessable IDs because every read needs a login.
+- Ticket status stored as text + CHECK constraint (not a Postgres ENUM type): adding a status later is an easy migration.
+- `agent_runs` is a separate table: one row per agent call makes counts, timings and timelines simple queries.
+- Login via the OAuth2 password form (`username` = email): makes Swagger's "Authorize" button work with no extra code.
+- No public sign-up; staff accounts are created with `python -m app.create_user`: strangers must not be able to become staff.
+- `bcrypt` and `PyJWT` directly (not passlib): passlib is unmaintained; these two are small and widely used.
+- Tests run against a real Postgres test database, always forced in `conftest.py`: same behaviour as production, and tests can never wipe the dev database.
+- CSV import saves valid rows and reports invalid ones by row number: one bad row shouldn't block the rest.
+- The API runs `alembic upgrade head` on start-up: the database is always migrated before the app serves requests.

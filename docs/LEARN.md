@@ -67,3 +67,29 @@ One section per phase: what was built, why it is designed that way, and what the
 3. *Why copy `requirements.txt` before the code in the Dockerfile?* Docker caches each step; libraries change rarely, so code-only changes skip the slow install.
 4. *What does CI run, and when?* On every PR and every push to `main`: `ruff check`, `ruff format --check`, and `pytest`.
 5. *Why read settings from environment variables?* The same code runs locally, in CI and in production with different values, and secrets stay out of the code.
+
+## Phase 3: Tickets and login
+
+**What we built.** Three database tables (`users`, `tickets`, `agent_runs`) defined as SQLAlchemy models and created by the first Alembic migration; staff login with bcrypt-hashed passwords and JWT tokens; a command to create staff users; and ticket endpoints: create (public), CSV import, list with filters (newest first) and detail with agent runs. 23 tests run against a real PostgreSQL test database, locally and in CI.
+
+**How to run it.** `docker compose up --build` (the API runs migrations on start). Create a login: `docker compose exec api python -m app.create_user "Demo Staff" demo@replydesk.dev 'demo-pass-123'`. Open http://localhost:8010/docs → **Authorize** (email in "username") → `POST /tickets/import` with `eval/emails.csv` → `GET /tickets`. Tests: `cd backend && .venv/bin/pytest`.
+
+**Why it is designed this way.**
+- **Models are the single source of truth.** Alembic's autogenerate compares them with the database and writes the migration; `alembic check` in CI fails if a model changes without a migration. I still read every generated migration: the first one had the status check constraint written twice and would have failed.
+- **Status is a fixed list** (`new`, `processing`, …) enforced twice: by a Python enum in code and a CHECK constraint in the database. Stored as text rather than a Postgres ENUM type, because adding a value to text plus a constraint is a simple migration.
+- **`agent_runs` is its own table**, not a JSON list inside the ticket: one row per call makes it easy to count failures, average durations per agent, and show a timeline.
+- **`POST /tickets` is public; everything else needs a login.** Customers don't have accounts. Staff accounts come from a command, not a sign-up page.
+- **Same error for "unknown email" and "wrong password"**, so an attacker can't use login to discover which emails have accounts.
+- **JWT instead of server sessions**: the API stores nothing per login; the signed token proves who you are. Downside: a token can't be revoked before it expires (8 hours), which is acceptable for a demo.
+- **CSV import saves the good rows and reports the bad ones** with row numbers, in one transaction. A typo in row 37 shouldn't block 59 good messages, and the user learns exactly what to fix.
+- **Newest first needs a tie-breaker**: rows imported in one transaction get the same `created_at` (Postgres's `now()` is the transaction's start time), so we also sort by `id`.
+- **Tests use a separate database that is always forced**, never taken from `DATABASE_URL`, because tests empty every table. I verified it: after running tests with `DATABASE_URL` pointing at the dev database, the dev database still had its 60 tickets.
+
+**Alternatives.** Async SQLAlchemy: handles more simultaneous requests, but harder to read and debug; FastAPI runs sync routes in a thread pool, which is plenty here. SQLite for tests: faster, but it handles JSON, constraints and timestamps differently from Postgres, so tests could pass and production fail. Server-side sessions or a hosted auth service instead of JWT: revocable, but more moving parts.
+
+**Self-check.**
+1. *Why a migration instead of `create_all()` on startup?* `create_all` only creates missing tables; it can't change an existing one. Migrations are versioned steps that bring any database (mine, CI's, production) to the same structure, and they're reviewed in git.
+2. *What happens to a ticket's agent runs if the ticket is deleted?* They are deleted too (`ON DELETE CASCADE`), so the audit trail never points at a missing ticket.
+3. *What is inside our JWT, and can a user change it?* The user ID (`sub`) and an expiry (`exp`). They can read it but not change it: any change breaks the signature, which only the server's secret can produce.
+4. *Why bcrypt and not SHA-256 for passwords?* bcrypt is deliberately slow and salted, so cracking a leaked hash takes years instead of seconds; SHA-256 is built to be fast.
+5. *A CSV has 60 rows and row 12 has a bad email. What happens?* 59 tickets are created and the response lists `{"row": 12, "error": "Invalid: customer_email"}`.
