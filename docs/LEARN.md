@@ -160,3 +160,28 @@ One section per phase: what was built, why it is designed that way, and what the
 3. *How does the code stop the Extractor inventing an order ID?* The prompt forbids it, and the pipeline also checks the ID appears in the message; if not, it's set to null and the agent run is annotated, with the raw output kept for the eval.
 4. *Why do the Drafter and Checker share `guidelines.md` instead of each having their own rules?* So the writer and the reviewer can never disagree about the rules; change one file and both follow.
 5. *Why four agents instead of one?* When something goes wrong, the `agent_runs` timeline shows exactly which step failed, each prompt stays short and focused, and the Checker reviews someone else's work rather than its own.
+
+## Phase 6: Human review
+
+**What we built.** `POST /tickets/{id}/approve` (send the draft as is, or an edited reply), `POST /tickets/{id}/reject`, the `edited` column (our second migration), and `GET /stats`: counts by status and category, share of drafts approved without edits, Checker pass rate, and average time per agent step. 73 tests.
+
+**How to run it.** `docker compose up --build`, then in http://localhost:8010/docs (after Authorize): pick a `ready_for_review` ticket, `POST /tickets/{id}/approve` with no body (unedited) or `{"final_reply": "..."}` (edited), or `/reject`. Then `GET /stats`.
+
+**Why it is designed this way.**
+- **"Edited" is decided once, at approval, and stored.** The draft and the final reply are both kept, so I can later compare them; the boolean makes the headline number ("share approved without edits") a simple count. Whitespace at the ends doesn't count as an edit.
+- **Only tickets waiting for review can be decided** (`ready_for_review` or `needs_manual`); anything else gets 409 Conflict. Approving twice, or approving something the agents are still working on, is refused rather than silently overwriting.
+- **A `needs_manual` ticket can still be answered**: the human writes the whole reply. That's the point of the manual queue.
+- **Reject sends nothing** and keeps the draft for the record. A rerun clears the old review and gets a fresh draft.
+- **Who and when** (`reviewed_by`, `reviewed_at`) are saved on every decision: an audit trail for humans, like `agent_runs` is for agents.
+- **Stats leave failed agent calls out of the averages**: a 60-second timeout would make a 2-second step look like a 30-second one.
+
+**Alternatives.** Store a full edit history (every version of the reply): richer, but more tables for a number I don't need yet. Compute "edited" on the fly in `/stats` by comparing texts: no extra column, but the rule would live in a SQL query instead of one obvious line of Python. A separate `reviews` table: needed if a ticket could be reviewed several times by different people; overkill here.
+
+**Verified.** 73 tests pass. Through the Docker API: approve unedited → `edited: false`; approve with a new reply → `edited: true`; reject → `rejected`; approving again → 409; `/stats` → `share_approved_without_edits: 0.5` (local test data, not a result).
+
+**Self-check.**
+1. *How is "approved without edits" measured?* At approval the final reply is compared with the draft (ignoring leading and trailing whitespace); the result is stored in `edited`. The share is unedited approvals divided by all approvals that had a draft.
+2. *Why a migration for one new column?* The table already exists in every database (mine, CI's, later production); a migration is the reviewed, repeatable way to change it. `create_all` can't add a column to an existing table.
+3. *What happens if two staff approve the same ticket?* The first succeeds; the second gets 409 because the ticket is no longer waiting for review.
+4. *Can a `needs_manual` ticket be approved?* Yes, with a reply the human writes; without one there's nothing to send, so it's refused (422).
+5. *Why are failed agent runs excluded from "average time per step"?* Timeouts and errors would distort how long a working step takes; failures are counted separately in `agent_runs`.
