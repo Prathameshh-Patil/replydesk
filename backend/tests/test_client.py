@@ -93,3 +93,12 @@ def test_timeout_becomes_agent_call_error(monkeypatch):
     monkeypatch.setattr(client.httpx2, "post", timeout)
     with pytest.raises(AgentCallError, match="ReadTimeout"):
         call_agent("sorter", "x")
+
+
+def test_token_usage_is_counted(monkeypatch):
+    monkeypatch.setattr(client, "usage", {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0})
+    body = {**OK_BODY, "usage": {"prompt_tokens": 800, "completion_tokens": 40}}
+    replies(monkeypatch, FakeResponse(200, body), FakeResponse(200, body))
+    call_agent("sorter", "x")
+    call_agent("sorter", "y")
+    assert client.usage == {"calls": 2, "prompt_tokens": 1600, "completion_tokens": 80}

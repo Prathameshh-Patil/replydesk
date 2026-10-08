@@ -19,6 +19,10 @@ RATE_LIMIT_WAITS = 2  # how many times to wait and resend after "429 Too Many Re
 MAX_WAIT_SECONDS = 60
 
 
+# Running totals of what the provider reports per call; read by eval/run_eval.py for cost.
+usage = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0}
+
+
 class AgentCallError(Exception):
     """The model could not be reached or gave no usable answer (network, timeout, HTTP error)."""
 
@@ -55,9 +59,14 @@ def call_agent(agent_name: str, message: str) -> str:
         if response.status_code >= 400:
             raise AgentCallError(f"HTTP {response.status_code}: {response.text[:200]}")
         try:
-            return response.json()["choices"][0]["message"]["content"]
+            body = response.json()
+            content = body["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError, ValueError) as e:
             raise AgentCallError(f"Unexpected response format: {e}") from e
+        usage["calls"] += 1
+        for key in ("prompt_tokens", "completion_tokens"):
+            usage[key] += (body.get("usage") or {}).get(key, 0)
+        return content
     raise AssertionError("unreachable")
 
 
