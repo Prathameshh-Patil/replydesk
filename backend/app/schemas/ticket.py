@@ -36,6 +36,7 @@ class TicketOut(BaseModel):
     checker_ok: bool | None
     checker_problems: list[str] | None
     final_reply: str | None
+    edited: bool | None
     reviewed_by: int | None
     created_at: datetime
     reviewed_at: datetime | None
@@ -66,3 +67,9 @@ class ImportRowError(BaseModel):
 class ImportResult(BaseModel):
     created: int
     errors: list[ImportRowError]
+
+
+class ApproveRequest(BaseModel):
+    """Leave final_reply empty to send the draft as it is; fill it in to send an edited reply."""
+
+    final_reply: str | None = Field(default=None, max_length=5000)
