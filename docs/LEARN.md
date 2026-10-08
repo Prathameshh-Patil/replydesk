@@ -134,3 +134,29 @@ One section per phase: what was built, why it is designed that way, and what the
 3. *What's the difference between the retry in `runner.py` and the waiting in `client.py`?* `runner.py` retries a bad or missing answer once; `client.py` waits and resends only when the provider says "too many requests" (429), because that isn't a failure of the agent.
 4. *Why does nothing outside `client.py` know which provider we use?* So the provider can change without touching the pipeline or tests. It changed twice this phase with no other code changes.
 5. *Why don't the tests call Gemini?* They'd be slow, cost quota (only 20 calls/day free), and give different answers; the fake client makes them fast, free and repeatable.
+
+## Phase 5: The other three agents and the pipeline
+
+**What we built.** Three more agents: the Extractor (`agents/extractor.md`: name, order ID, product, request; never invents), the Drafter (`agents/drafter.md`: a short reply following the guidelines) and the Checker (`agents/checker.md`: `ok` plus a list of problems). A Pydantic schema for each. `pipeline.py` now runs sort → extract → draft → check, saving each result before the next step. `POST /tickets/{id}/rerun` continues from the step that failed. 60 tests.
+
+**How to run it.** `docker compose up --build`, submit `POST /tickets`, then `GET /tickets/{id}`: status `ready_for_review`, with `category`, `urgency`, `extracted`, `draft_reply`, `checker_ok`, `checker_problems` and four `agent_runs` with timings. Without using any Gemini quota: `AGENT_CLIENT=fake docker compose up -d` (canned answers). Tests: `cd backend && .venv/bin/pytest`.
+
+**Why it is designed this way.**
+- **The pipeline is a list of four plain functions**, each paired with the ticket field that proves it's done (`category`, `extracted`, `draft_reply`, `checker_ok`). The loop skips steps whose field is already filled. That one rule gives "resume from the failed step" for free.
+- **Commit after every step.** A failure at step 3 keeps steps 1 and 2 in the database, so a rerun costs only the remaining calls (which matters with 20 free calls a day).
+- **The Checker never blocks.** A draft with problems still goes to `ready_for_review`, with the problems shown; the human decides. Only a *broken* agent (bad output twice, or the API failing) sends a ticket to `needs_manual`.
+- **Rules the code can check, the code checks.** The Checker's `ok` must match whether `problems` is empty (a Pydantic validator). An extracted order ID must literally appear in the message, or the code drops it and notes it on the agent run; the raw output is kept, so the eval can still count invention attempts.
+- **One guidelines file, two agents.** `{{GUIDELINES}}` in the Drafter and Checker prompts is filled from `agents/guidelines.md`, so the writer and the reviewer can never follow different rules.
+- **Examples are now actually sent.** Until this phase the loader sent only the Instructions block, so the Sorter's examples were documentation, not prompt. Now the Examples section is appended ("few-shot" prompting). None of them come from the test set.
+- **Each agent sees only what it needs.** Sorter and Extractor: subject and body. Drafter: the message plus the Sorter and Extractor results. Checker: the message plus the draft. None of them see the customer's email address.
+
+**Alternatives.** One agent that does all four jobs: one call instead of four (cheaper on our 20/day quota), but one failure gives no clue which part went wrong, and the Checker would be checking its own work. Running Extractor and Sorter in parallel: faster, but more complex code and it would burst the 5-per-minute limit. A workflow engine (Temporal, Airflow): durable and resumable, but heavy for four sequential steps; a loop over a list does the job.
+
+**Verified.** All 60 tests pass, including a failure at each of the four steps (earlier results kept, later steps never called) and a rerun that resumes from each failed step. Through the Docker API (fake client), a new ticket reached `ready_for_review` with a draft, a checker result and four agent runs with timings. *Real-model run: pending until the Gemini daily quota resets.*
+
+**Self-check.**
+1. *The Drafter fails twice. What does the ticket look like, and what does a rerun do?* Status `needs_manual`; `category`, `urgency` and `extracted` are saved; `draft_reply` and `checker_ok` are empty. A rerun skips sort and extract and starts at the Drafter.
+2. *The Checker says `ok: false`. Does the ticket go to `needs_manual`?* No. It goes to `ready_for_review` with the problems listed; the Checker informs the human, it doesn't decide.
+3. *How does the code stop the Extractor inventing an order ID?* The prompt forbids it, and the pipeline also checks the ID appears in the message; if not, it's set to null and the agent run is annotated, with the raw output kept for the eval.
+4. *Why do the Drafter and Checker share `guidelines.md` instead of each having their own rules?* So the writer and the reviewer can never disagree about the rules; change one file and both follow.
+5. *Why four agents instead of one?* When something goes wrong, the `agent_runs` timeline shows exactly which step failed, each prompt stays short and focused, and the Checker reviews someone else's work rather than its own.

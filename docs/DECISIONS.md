@@ -35,3 +35,12 @@ One line per decision, with the reason.
 - The agent sees only the subject and body, never the customer's email: less personal data sent to a third party, and the Extractor can't "find" details that aren't in the message.
 - Imported tickets run through the agents by default (`run_agents=false` to skip): an import should behave like messages arriving.
 - Agent prompt examples are never taken from `eval/emails.csv`: otherwise the eval measures memorisation.
+- Stay on Gemini's free tier (user's choice) despite 5 requests/min and 20/day (= 5 tickets/day): build with the fake client, verify with real calls sparingly, run the eval in daily batches, cap the live demo at 5 tickets/day.
+- Pipeline = an ordered list of (step, field-that-proves-it's-done); steps whose field is filled are skipped: "resume from the failed step" without extra state.
+- Commit after every pipeline step: a later failure keeps earlier work, and reruns only pay for the remaining calls.
+- A Checker "fail" goes to review with the problems listed, not to `needs_manual`: the Checker informs the human, it doesn't decide.
+- Code drops an extracted order ID that isn't literally in the message, and annotates the agent run: the prompt asks, the code guarantees.
+- The Checker's `ok` must equal "no problems" (Pydantic validator): an inconsistent answer is treated as invalid output.
+- Guidelines are inserted into the Drafter and Checker prompts from one file (`{{GUIDELINES}}`): both agents always follow the same rules.
+- Each agent file's Examples section is sent to the model (few-shot); before Phase 5 only the Instructions block was sent.
+- Rerun: `needs_manual` continues from the failed step; `ready_for_review`/`rejected` start over; `new`/`processing`/`approved` are refused (409).
