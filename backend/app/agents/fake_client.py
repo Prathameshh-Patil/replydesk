@@ -8,6 +8,11 @@ import json
 # What each agent answers when a test hasn't scripted anything else.
 DEFAULT_REPLIES = {
     "sorter": json.dumps({"category": "other", "urgency": "low", "reason": "Fake sorter answer."}),
+    "extractor": json.dumps(
+        {"customer_name": None, "order_id": None, "product": None, "request": "fake request"}
+    ),
+    "drafter": json.dumps({"reply": "Hi there,\n\nThis is a fake draft.\n\nTeam Pixel & Plug"}),
+    "checker": json.dumps({"ok": True, "problems": []}),
 }
 
 
@@ -28,6 +33,9 @@ class FakeAgentClient:
         if isinstance(reply, Exception):
             raise reply
         return reply
+
+    def agents_called(self) -> list[str]:
+        return [agent for agent, _ in self.calls]
 
 
 fake_call_agent = FakeAgentClient()

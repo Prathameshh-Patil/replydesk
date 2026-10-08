@@ -13,6 +13,8 @@ Model settings (same for every agent, set in `.env`): Gemini (`gemini-3.5-flash`
 OpenAI-compatible API, temperature `0` (same answer for the same message), JSON mode on, reasoning
 effort `low`. Each call is stateless: no memory of earlier tickets.
 
+The examples at the end are sent to the model with the instructions. They are deliberately **not** taken from `eval/emails.csv`: examples from the test set would leak answers and inflate the score.
+
 ## Instructions
 
 ```
@@ -59,8 +61,6 @@ The code checks this exact shape (`SorterOutput` in `backend/app/agents/schemas.
 ```
 
 ## Examples
-
-These are deliberately **not** from `eval/emails.csv`: examples inside the instructions would leak test answers and inflate the score.
 
 **Input**
 ```

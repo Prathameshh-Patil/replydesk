@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models import Ticket, TicketStatus, User
-from app.pipeline import run_pipeline
+from app.pipeline import reset_agent_results, run_pipeline
 from app.schemas.ticket import (
     ImportResult,
     ImportRowError,
@@ -120,4 +120,31 @@ def get_ticket(
     ticket = db.get(Ticket, ticket_id, options=[selectinload(Ticket.agent_runs)])
     if ticket is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Ticket not found")
+    return ticket
+
+
+@router.post("/{ticket_id}/rerun", response_model=TicketOut, status_code=status.HTTP_202_ACCEPTED)
+def rerun_ticket(
+    ticket_id: int,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_user),
+) -> Ticket:
+    """Run the agents again.
+
+    - needs_manual: continue from the step that failed (finished steps are kept).
+    - ready_for_review / rejected: start again from the first step.
+    """
+    ticket = db.get(Ticket, ticket_id)
+    if ticket is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Ticket not found")
+    if ticket.status in (TicketStatus.NEW, TicketStatus.PROCESSING):
+        raise HTTPException(status.HTTP_409_CONFLICT, "The agents are already working on it")
+    if ticket.status == TicketStatus.APPROVED:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Approved tickets can't be rerun")
+    if ticket.status in (TicketStatus.READY_FOR_REVIEW, TicketStatus.REJECTED):
+        reset_agent_results(ticket)
+    ticket.status = TicketStatus.NEW
+    db.commit()
+    background_tasks.add_task(run_pipeline, ticket.id)
     return ticket
