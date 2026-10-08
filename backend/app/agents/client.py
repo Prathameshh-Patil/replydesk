@@ -7,10 +7,16 @@ It speaks the OpenAI-compatible chat API. We use Gemini's; Ollama, Groq and othe
 same API, so switching is a change of LLM_BASE_URL / LLM_MODEL / LLM_API_KEY in .env.
 """
 
+import re
+import time
+
 import httpx2
 
 from app.agents.prompts import load_instructions
 from app.core.settings import settings
+
+RATE_LIMIT_WAITS = 2  # how many times to wait and resend after "429 Too Many Requests"
+MAX_WAIT_SECONDS = 60
 
 
 class AgentCallError(Exception):
@@ -29,18 +35,40 @@ def call_agent(agent_name: str, message: str) -> str:
         "response_format": {"type": "json_object"},  # JSON mode: the reply must be valid JSON
         "reasoning_effort": settings.llm_reasoning_effort,
     }
+    for attempt in range(RATE_LIMIT_WAITS + 1):
+        try:
+            response = httpx2.post(
+                f"{settings.llm_base_url.rstrip('/')}/chat/completions",
+                json=payload,
+                headers={"Authorization": f"Bearer {settings.llm_api_key}"},
+                timeout=settings.llm_timeout_seconds,
+            )
+        except httpx2.HTTPError as e:
+            raise AgentCallError(f"{type(e).__name__}: {e}") from e
+
+        # Rate limited: not the agent's fault, so wait as long as the provider asks and resend.
+        # (A bad *answer* is retried by runner.py; this only handles "too many requests".)
+        if response.status_code == 429 and attempt < RATE_LIMIT_WAITS:
+            time.sleep(_seconds_to_wait(response))
+            continue
+
+        if response.status_code >= 400:
+            raise AgentCallError(f"HTTP {response.status_code}: {response.text[:200]}")
+        try:
+            return response.json()["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError, ValueError) as e:
+            raise AgentCallError(f"Unexpected response format: {e}") from e
+    raise AssertionError("unreachable")
+
+
+def _seconds_to_wait(response) -> float:
+    """Use the provider's hint (Retry-After header, or Gemini's "retry in 23.1s"), capped."""
+    hint = response.headers.get("retry-after")
+    if hint is None:
+        match = re.search(r"retry in ([\d.]+)s", response.text)
+        hint = match.group(1) if match else None
     try:
-        response = httpx2.post(
-            f"{settings.llm_base_url.rstrip('/')}/chat/completions",
-            json=payload,
-            headers={"Authorization": f"Bearer {settings.llm_api_key}"},
-            timeout=settings.llm_timeout_seconds,
-        )
-        response.raise_for_status()
-        return response.json()["choices"][0]["message"]["content"]
-    except httpx2.HTTPStatusError as e:
-        raise AgentCallError(f"HTTP {e.response.status_code}: {e.response.text[:200]}") from e
-    except httpx2.HTTPError as e:
-        raise AgentCallError(f"{type(e).__name__}: {e}") from e
-    except (KeyError, IndexError, TypeError, ValueError) as e:
-        raise AgentCallError(f"Unexpected response format: {e}") from e
+        seconds = float(hint) if hint is not None else 20.0
+    except ValueError:
+        seconds = 20.0
+    return min(seconds + 1, MAX_WAIT_SECONDS)  # +1s margin so we land after the window resets
