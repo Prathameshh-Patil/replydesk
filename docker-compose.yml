@@ -20,9 +20,16 @@ services:
       retries: 10
 
   api:
-    build: ./backend
+    build:
+      context: .  # the repo root, so the image can include agents/*.md
+      dockerfile: backend/Dockerfile
     environment:
       ENVIRONMENT: local
+      AGENT_CLIENT: ${AGENT_CLIENT:-llm}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://generativelanguage.googleapis.com/v1beta/openai}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-gemini-3.8-flash}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-in-production-please}
       # Inside Compose the database's host name is the service name "db".
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-replydesk}:${POSTGRES_PASSWORD:-replydesk}@db:5432/${POSTGRES_DB:-replydesk}
     ports:

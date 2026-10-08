@@ -3,7 +3,8 @@
 Everything else calls `call_agent(agent_name, message) -> str`. To change provider or model,
 change this file (or just the LLM_* settings); nothing else in the code base needs to know.
 
-It speaks the OpenAI-compatible chat API, which both Ollama (local) and Groq (hosted) offer.
+It speaks the OpenAI-compatible chat API. We use Gemini's; Ollama, Groq and others offer the
+same API, so switching is a change of LLM_BASE_URL / LLM_MODEL / LLM_API_KEY in .env.
 """
 
 import httpx2
