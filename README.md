@@ -6,7 +6,7 @@ An AI support inbox with human approval. It reads customer messages, does the bo
 
 ## How it works (planned)
 
-A customer message comes in. Four small AI agents handle it in order. Each agent is a prompt file in `agents/`, run on a language model through one provider-agnostic client (currently the Gemini API):
+A customer message comes in. Four small AI agents handle it in order. Each agent is a prompt file in `agents/`, run on a language model through one provider-agnostic client (currently the open-weight gpt-oss-120b on Groq):
 
 1. **Sorter**: category and urgency
 2. **Extractor**: customer name, order ID, product, request
@@ -17,7 +17,7 @@ A support person then approves, edits or rejects the draft. Nothing is sent with
 
 ## Stack
 
-Next.js + TypeScript + Tailwind · FastAPI + SQLAlchemy + Pydantic · PostgreSQL + Alembic · LLM via OpenAI-compatible API (Gemini) · pytest + Playwright · Docker Compose · GitHub Actions
+Next.js + TypeScript + Tailwind · FastAPI + SQLAlchemy + Pydantic · PostgreSQL + Alembic · LLM via OpenAI-compatible API (gpt-oss-120b on Groq) · pytest + Playwright · Docker Compose · GitHub Actions
 
 ## License
 
