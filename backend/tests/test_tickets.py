@@ -20,7 +20,7 @@ def make_ticket(client, **changes):
 
 def test_customer_can_create_ticket_without_login(client):
     ticket = make_ticket(client)
-    assert ticket["status"] == "new"
+    assert ticket["status"] == "new"  # the response is sent before the agents run
     assert ticket["category"] is None
     assert ticket["subject"] == "Charged twice"
 
@@ -52,18 +52,19 @@ def test_list_is_newest_first(client, auth):
 def test_list_filters_by_status_category_and_urgency(client, auth, db):
     from app.models import Ticket, TicketStatus
 
-    a, b = make_ticket(client), make_ticket(client)
-    ticket_b = db.get(Ticket, b["id"])
-    ticket_b.category, ticket_b.urgency, ticket_b.status = "billing", "high", TicketStatus.APPROVED
+    # Created directly in the database (no agents) so each ticket has exactly the values we set.
+    a = Ticket(**MESSAGE)
+    b = Ticket(**MESSAGE, category="billing", urgency="high", status=TicketStatus.APPROVED)
+    db.add_all([a, b])
     db.commit()
 
     def ids(**params):
         return [t["id"] for t in client.get("/tickets", params=params, headers=auth).json()]
 
-    assert ids(status="new") == [a["id"]]
-    assert ids(status="approved") == [b["id"]]
-    assert ids(category="billing") == [b["id"]]
-    assert ids(urgency="high", category="billing") == [b["id"]]
+    assert ids(status="new") == [a.id]
+    assert ids(status="approved") == [b.id]
+    assert ids(category="billing") == [b.id]
+    assert ids(urgency="high", category="billing") == [b.id]
     assert ids(urgency="low") == []
     assert client.get("/tickets", params={"status": "bogus"}, headers=auth).status_code == 422
 
@@ -76,12 +77,14 @@ def test_list_limit_and_offset(client, auth):
 
 
 def test_ticket_detail_includes_agent_runs(client, auth, db):
-    from app.models import AgentRun
+    from app.models import AgentRun, Ticket
 
-    ticket = make_ticket(client)
+    ticket = Ticket(**MESSAGE)
+    db.add(ticket)
+    db.commit()
     db.add(
         AgentRun(
-            ticket_id=ticket["id"],
+            ticket_id=ticket.id,
             agent_name="sorter",
             input="in",
             output="out",
@@ -90,7 +93,7 @@ def test_ticket_detail_includes_agent_runs(client, auth, db):
         )
     )
     db.commit()
-    r = client.get(f"/tickets/{ticket['id']}", headers=auth)
+    r = client.get(f"/tickets/{ticket.id}", headers=auth)
     assert r.status_code == 200
     runs = r.json()["agent_runs"]
     assert len(runs) == 1 and runs[0]["agent_name"] == "sorter" and runs[0]["duration_ms"] == 120
