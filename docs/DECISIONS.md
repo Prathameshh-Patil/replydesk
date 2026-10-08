@@ -45,3 +45,7 @@ One line per decision, with the reason.
 - Each agent file's Examples section is sent to the model (few-shot); before Phase 5 only the Instructions block was sent.
 - Rerun: `needs_manual` continues from the failed step; `ready_for_review`/`rejected` start over; `new`/`processing`/`approved` are refused (409).
 - Switched provider to Groq, model `openai/gpt-oss-120b` (open-weight, Apache 2.0): Gemini's free tier allows 20 requests/day; Groq's allows 1,000/day, 30/min (8K tokens/min, 200K tokens/day). Real Groq call pending the user's Groq key.
+- `tickets.edited` stored at approval (final reply vs draft, ends trimmed): the headline quality metric is a simple count.
+- Approve/reject only from `ready_for_review` or `needs_manual`, else 409: no silent overwrite of a decision.
+- `needs_manual` tickets can be approved with a human-written reply: that is what the manual queue is for.
+- `/stats` averages only successful agent runs: timeouts would distort typical step time.

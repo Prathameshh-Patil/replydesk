@@ -56,6 +56,7 @@ class Ticket(Base):
 
     # Filled in by the human reviewer
     final_reply: Mapped[str | None] = mapped_column(Text)
+    edited: Mapped[bool | None]  # on approval: did the human change the draft?
     reviewed_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
 
     created_at: Mapped[datetime] = mapped_column(

@@ -1,5 +1,6 @@
 import csv
 import io
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, UploadFile, status
 from pydantic import ValidationError
@@ -11,6 +12,7 @@ from app.core.security import get_current_user
 from app.models import Ticket, TicketStatus, User
 from app.pipeline import reset_agent_results, run_pipeline
 from app.schemas.ticket import (
+    ApproveRequest,
     ImportResult,
     ImportRowError,
     TicketCreate,
@@ -142,9 +144,61 @@ def rerun_ticket(
         raise HTTPException(status.HTTP_409_CONFLICT, "The agents are already working on it")
     if ticket.status == TicketStatus.APPROVED:
         raise HTTPException(status.HTTP_409_CONFLICT, "Approved tickets can't be rerun")
+    ticket.reviewed_by = ticket.reviewed_at = None  # a rejected ticket gets a fresh review
     if ticket.status in (TicketStatus.READY_FOR_REVIEW, TicketStatus.REJECTED):
         reset_agent_results(ticket)
     ticket.status = TicketStatus.NEW
     db.commit()
     background_tasks.add_task(run_pipeline, ticket.id)
+    return ticket
+
+
+REVIEWABLE = (TicketStatus.READY_FOR_REVIEW, TicketStatus.NEEDS_MANUAL)
+
+
+def _get_reviewable(db: Session, ticket_id: int) -> Ticket:
+    ticket = db.get(Ticket, ticket_id)
+    if ticket is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Ticket not found")
+    if ticket.status not in REVIEWABLE:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            f"Only tickets waiting for review can be decided ({ticket.status})",
+        )
+    return ticket
+
+
+@router.post("/{ticket_id}/approve", response_model=TicketOut)
+def approve_ticket(
+    ticket_id: int,
+    body: ApproveRequest | None = None,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> Ticket:
+    """Approve the draft as it is, or send an edited reply. Approving marks the reply as sent."""
+    ticket = _get_reviewable(db, ticket_id)
+    edited_reply = (body.final_reply or "").strip() if body else ""
+    draft = (ticket.draft_reply or "").strip()
+    final = edited_reply or draft
+    if not final:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT, "There is no draft: write the reply to send"
+        )
+    ticket.final_reply = final
+    ticket.edited = final != draft  # the measure of draft quality: was it sent unchanged?
+    ticket.status = TicketStatus.APPROVED
+    ticket.reviewed_by, ticket.reviewed_at = user.id, datetime.now(UTC)
+    db.commit()
+    return ticket
+
+
+@router.post("/{ticket_id}/reject", response_model=TicketOut)
+def reject_ticket(
+    ticket_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)
+) -> Ticket:
+    """Nothing is sent. The ticket can be rerun later to get a new draft."""
+    ticket = _get_reviewable(db, ticket_id)
+    ticket.status = TicketStatus.REJECTED
+    ticket.reviewed_by, ticket.reviewed_at = user.id, datetime.now(UTC)
+    db.commit()
     return ticket
