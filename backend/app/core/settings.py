@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     # Any OpenAI-compatible chat API. We use Gemini; Ollama, Groq, etc. work by changing these.
     llm_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai"
     llm_api_key: str = ""  # secret: set LLM_API_KEY in .env, never in code
-    llm_model: str = "gemini-3.8-flash"
+    llm_model: str = "gemini-3.5-flash"
     llm_reasoning_effort: str = "low"
     llm_timeout_seconds: float = 60
 
