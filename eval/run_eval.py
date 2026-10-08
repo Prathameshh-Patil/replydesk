@@ -338,7 +338,7 @@ def main() -> None:
             writer = csv.DictWriter(fh, fieldnames=COLUMNS)
             if new_file:
                 writer.writeheader()
-            rate_limited_in_a_row = 0
+            failed_in_a_row = 0
             for i, row in enumerate(todo, 1):
                 result = evaluate_one(row)
                 if isinstance(result, str):  # the network or provider failed, not the agent
@@ -347,16 +347,16 @@ def main() -> None:
                         " it will be retried on the next run",
                         flush=True,
                     )
-                    if result.startswith("HTTP 429"):
-                        # A per-minute limit clears with a pause; three in a row means the
-                        # daily quota is gone, so stop and let a later run continue.
-                        rate_limited_in_a_row += 1
-                        if rate_limited_in_a_row >= 3:
-                            print("Provider quota used up for now: stopping. Run again later.")
-                            break
-                        time.sleep(60)
+                    # A per-minute limit or a network blip clears with a pause; three failures
+                    # in a row means the quota is gone or the network is down, so stop and let a
+                    # later run continue from here.
+                    failed_in_a_row += 1
+                    if failed_in_a_row >= 3:
+                        print("Three network/provider failures in a row: stopping.")
+                        break
+                    time.sleep(60)
                     continue
-                rate_limited_in_a_row = 0
+                failed_in_a_row = 0
                 writer.writerow(result)
                 fh.flush()  # saved immediately, so a stopped run loses nothing
                 mark = "✓" if result["category_ok"] and result["urgency_ok"] else "✗"
