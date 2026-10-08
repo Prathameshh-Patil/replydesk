@@ -9,6 +9,8 @@ os.environ["DATABASE_URL"] = os.environ.get(
     "TEST_DATABASE_URL", "postgresql+psycopg://replydesk:replydesk@localhost:5442/replydesk_test"
 )
 os.environ["ENVIRONMENT"] = "test"
+# Tests never call a real model: no network, no cost, same answers every run.
+os.environ["AGENT_CLIENT"] = "fake"
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

@@ -6,7 +6,7 @@ An AI support inbox with human approval. It reads customer messages, does the bo
 
 ## How it works (planned)
 
-A customer message comes in. Four small AI agents (built on Lyzr Agent Studio) handle it in order:
+A customer message comes in. Four small AI agents handle it in order. Each agent is a prompt file in `agents/`, run on a language model through one provider-agnostic client (currently the Gemini API):
 
 1. **Sorter**: category and urgency
 2. **Extractor**: customer name, order ID, product, request
@@ -17,7 +17,7 @@ A support person then approves, edits or rejects the draft. Nothing is sent with
 
 ## Stack
 
-Next.js + TypeScript + Tailwind · FastAPI + SQLAlchemy + Pydantic · PostgreSQL + Alembic · Lyzr Agent Studio · pytest + Playwright · Docker Compose · GitHub Actions
+Next.js + TypeScript + Tailwind · FastAPI + SQLAlchemy + Pydantic · PostgreSQL + Alembic · LLM via OpenAI-compatible API (Gemini) · pytest + Playwright · Docker Compose · GitHub Actions
 
 ## License
 

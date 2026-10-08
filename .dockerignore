@@ -1,0 +1,8 @@
+# Only backend/ and agents/ are needed in the API image; keep everything else out.
+*
+!backend/requirements.txt
+!backend/alembic.ini
+!backend/alembic
+!backend/app
+!agents
+**/__pycache__

@@ -26,3 +26,12 @@ One line per decision, with the reason.
 - Tests run against a real Postgres test database, always forced in `conftest.py`: same behaviour as production, and tests can never wipe the dev database.
 - CSV import saves valid rows and reports invalid ones by row number: one bad row shouldn't block the rest.
 - The API runs `alembic upgrade head` on start-up: the database is always migrated before the app serves requests.
+- Dropped Lyzr Agent Studio: user's choice. Agents are prompt files (`agents/*.md`) run through one OpenAI-compatible client, so the provider is configuration, not code.
+- Agent instructions are read from `agents/<name>.md` on every call: the repo file is the agent; edits take effect immediately and show up as git diffs.
+- Local open model (Ollama, gpt-oss:20b) abandoned: 13 GB download over an unstable connection and tight on 16 GB RAM.
+- LLM provider: Gemini API, model `gemini-3.5-flash`: the newer 3.7/3.8 Flash models timed out on the free tier; 3.5 Flash answered in ~3 s.
+- Temperature 0 and JSON mode for every agent: the same message should get the same structured answer.
+- Bad agent output is retried once (runner.py), then `needs_manual`; HTTP 429 rate limits are waited out in client.py (provider's delay, max 60 s, twice): a rate limit isn't the agent's fault.
+- The agent sees only the subject and body, never the customer's email: less personal data sent to a third party, and the Extractor can't "find" details that aren't in the message.
+- Imported tickets run through the agents by default (`run_agents=false` to skip): an import should behave like messages arriving.
+- Agent prompt examples are never taken from `eval/emails.csv`: otherwise the eval measures memorisation.

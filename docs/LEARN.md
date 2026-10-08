@@ -93,3 +93,44 @@ One section per phase: what was built, why it is designed that way, and what the
 3. *What is inside our JWT, and can a user change it?* The user ID (`sub`) and an expiry (`exp`). They can read it but not change it: any change breaks the signature, which only the server's secret can produce.
 4. *Why bcrypt and not SHA-256 for passwords?* bcrypt is deliberately slow and salted, so cracking a leaked hash takes years instead of seconds; SHA-256 is built to be fast.
 5. *A CSV has 60 rows and row 12 has a bad email. What happens?* 59 tickets are created and the response lists `{"row": 12, "error": "Invalid: customer_email"}`.
+
+## Phase 4: One agent, end to end (the Sorter)
+
+**What we built.** The Sorter agent (`agents/sorter.md`), the only file that talks to a language model (`backend/app/agents/client.py`), the Pydantic schema for the Sorter's answer, the parse → validate → retry-once → `needs_manual` logic (`runner.py`), a fake client for tests, and `pipeline.py` running the Sorter in a background task. Every call is saved in `agent_runs`.
+
+**How to run it.** Put a Gemini key in `.env` (`LLM_API_KEY=`), then `docker compose up --build`. In http://localhost:8010/docs: `POST /tickets` with a message, then (after Authorize) `GET /tickets/{id}`: within ~3 seconds it has a `category`, `urgency` and one `agent_runs` entry. Tests (no network, no cost): `cd backend && .venv/bin/pytest`.
+
+**The path from API request to database row** (what I should be able to explain):
+1. `POST /tickets` (`routers/tickets.py`) validates the body with `TicketCreate`, saves the ticket with status `new`, schedules `run_pipeline(ticket.id)` as a background task, and returns `201` at once.
+2. After the response is sent, `run_pipeline` (`pipeline.py`) opens its own database session, sets the status to `processing`, and builds the message the agent sees: only `Subject:` and `Message:`, never the customer's email.
+3. `run_agent` (`agents/runner.py`) calls `call_agent("sorter", message)`.
+4. `call_agent` (`agents/client.py`) loads the Instructions block from `agents/sorter.md` as the system prompt and POSTs to the OpenAI-compatible `/chat/completions` endpoint (Gemini) with temperature 0 and JSON mode. It returns the reply text.
+5. `run_agent` validates that text against `SorterOutput` (category and urgency must be from the fixed lists, reason must exist), writes an `agent_runs` row (input, output, ok, error, duration) and commits it.
+6. If validation or the call failed, it tries exactly once more. If that also fails, it returns `None` and the pipeline sets the ticket to `needs_manual`.
+7. On success the pipeline copies `category` and `urgency` onto the ticket and sets `ready_for_review`. Any unexpected crash also ends in `needs_manual`, never stuck in `processing`.
+
+**Measured.** One real Sorter call: 2.3–3.2 s. A ticket submitted through the API was sorted 2.8 s after the POST (`billing` / `high` for a double charge). The 10 hardest labelled messages (a first look, not the official eval): category correct on 9 of 9, urgency on 8 of 9; E32 ("It stopped working") got `medium` where we labelled `low`; E49 hit the daily quota before it ran.
+
+**Why it is designed this way.**
+- **One client file.** The rest of the code knows only `call_agent(agent_name, message) -> str`. This paid off immediately: the provider changed twice this phase (Lyzr → Ollama → Gemini) and the pipeline, runner, schema and all tests didn't change.
+- **The .md file is the agent.** Instructions are read from `agents/sorter.md` on every call, so editing the file changes the agent and the change shows up as a git diff, which is how Phase 8 improvements will be recorded.
+- **Code decides, the model only reads and writes.** The model returns JSON; Pydantic decides whether it's acceptable. A wrong value (e.g. `"shipping"`) is treated exactly like broken JSON.
+- **Two kinds of retry, in two places.** A bad *answer* is retried once by `runner.py`, then `needs_manual`. A *rate limit* (HTTP 429) isn't the agent's fault: `client.py` waits as long as the provider asks (max 60 s, at most twice). Without that split, tickets would land in the manual queue just because we were sending requests too fast.
+- **Every attempt is a row in `agent_runs`**, including failures, committed immediately, so the audit trail survives a later crash and shows exactly what the model said.
+- **Examples in the prompt are not from the test set.** Otherwise the eval would be partly testing memorisation.
+- **The fake client** has the same signature as the real one, so tests can script "bad JSON, then good JSON" and check the retry exactly, with no network and no cost.
+
+**What went wrong, and what I learned.**
+- Lyzr was dropped in favour of a provider-agnostic client. A local open model (Ollama, `gpt-oss:20b`) was tried: 13 GB download over an unstable connection, and tight on a 16 GB Mac, so it was abandoned for a hosted API.
+- `gemini-3.8-flash` and `gemini-3.7-flash` (the newest) never answered within 40 s on the free tier; `gemini-3.5-flash` answered in ~3 s. Newest isn't always usable.
+- The free tier allows **5 requests per minute and 20 per day** per model (read from Gemini's own 429 error: `GenerateRequestsPerDayPerProjectPerModel-FreeTier`, limit 20). A ticket will need 4 calls once all agents exist, so this is a real constraint for the eval and the live demo.
+- A Docker build failed with a pip hash mismatch while the network was saturated: a corrupted download, caught by pip's safety check. Retrying later fixed it; bypassing the check would have been wrong.
+
+**Alternatives.** Let the provider validate the schema (structured outputs): less code, but ties us to one provider's feature, and we still need our own check. One big agent: fewer calls, but when it fails you can't tell which part failed. A task queue (Celery + Redis) instead of background tasks: survives restarts and can limit concurrency, but adds two moving parts; deliberately out of scope.
+
+**Self-check.**
+1. *What does `POST /tickets` return, and when do the agents run?* It returns the saved ticket (status `new`) immediately; the Sorter runs afterwards in a background task.
+2. *The model returns `{"category": "shipping", ...}`. What happens?* Pydantic rejects it (not in the allowed list), an `agent_runs` row records the error, the call is retried once, and if it fails again the ticket goes to `needs_manual`.
+3. *What's the difference between the retry in `runner.py` and the waiting in `client.py`?* `runner.py` retries a bad or missing answer once; `client.py` waits and resends only when the provider says "too many requests" (429), because that isn't a failure of the agent.
+4. *Why does nothing outside `client.py` know which provider we use?* So the provider can change without touching the pipeline or tests. It changed twice this phase with no other code changes.
+5. *Why don't the tests call Gemini?* They'd be slow, cost quota (only 20 calls/day free), and give different answers; the fake client makes them fast, free and repeatable.
