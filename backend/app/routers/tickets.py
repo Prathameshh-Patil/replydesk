@@ -1,7 +1,7 @@
 import csv
 import io
 
-from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, UploadFile, status
 from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models import Ticket, TicketStatus, User
+from app.pipeline import run_pipeline
 from app.schemas.ticket import (
     ImportResult,
     ImportRowError,
@@ -25,21 +26,32 @@ REQUIRED_COLUMNS = {"customer_name", "customer_email", "subject", "body"}
 
 
 @router.post("", response_model=TicketOut, status_code=status.HTTP_201_CREATED)
-def create_ticket(data: TicketCreate, db: Session = Depends(get_db)) -> Ticket:
-    """A new customer message. Public: customers don't log in."""
+def create_ticket(
+    data: TicketCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+) -> Ticket:
+    """A new customer message. Public: customers don't log in.
+
+    Returns immediately; the agents run in the background after the response is sent.
+    """
     ticket = Ticket(**data.model_dump())
     db.add(ticket)
     db.commit()
+    background_tasks.add_task(run_pipeline, ticket.id)
     return ticket
 
 
 @router.post("/import", response_model=ImportResult)
 def import_tickets(
-    file: UploadFile, db: Session = Depends(get_db), _: User = Depends(get_current_user)
+    file: UploadFile,
+    background_tasks: BackgroundTasks,
+    run_agents: bool = True,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_user),
 ) -> ImportResult:
     """Upload a CSV with columns customer_name, customer_email, subject, body.
 
     Extra columns are ignored. Valid rows are saved; invalid rows are reported, not saved.
+    With run_agents=true (default) every imported ticket then goes through the agents, one by one.
     """
     raw = file.file.read(MAX_IMPORT_BYTES + 1)
     if len(raw) > MAX_IMPORT_BYTES:
@@ -71,6 +83,9 @@ def import_tickets(
     # One transaction: either all valid rows are saved, or (on a crash) none are.
     db.add_all(tickets)
     db.commit()
+    if run_agents:
+        for ticket in tickets:
+            background_tasks.add_task(run_pipeline, ticket.id)
     return ImportResult(created=len(tickets), errors=errors)
 
 
