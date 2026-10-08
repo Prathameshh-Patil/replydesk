@@ -49,3 +49,9 @@ One line per decision, with the reason.
 - Approve/reject only from `ready_for_review` or `needs_manual`, else 409: no silent overwrite of a decision.
 - `needs_manual` tickets can be approved with a human-written reply: that is what the manual queue is for.
 - `/stats` averages only successful agent runs: timeouts would distort typical step time.
+- Front end: every page is a client component calling the API with the token; Next.js only serves pages. One backend, no server-side data fetching to explain.
+- Login token in `localStorage`, read via `useSyncExternalStore`: simple; an httpOnly cookie is the safer next step (needs cookie auth + CSRF on the API).
+- Polling (1.5 s on a working ticket, 5 s in the inbox) instead of WebSockets: enough for a support inbox, far less code.
+- No UI kit or chart library: plain Tailwind and HTML bars for one chart; fewer dependencies, all code explainable.
+- Front end on port 3010 (pattern with 8010/5442); browser tests run in an isolated Compose project on 3020/8020/5452 with the fake model.
+- Playwright tests run against the Docker stack (same images as deployment), in CI too.

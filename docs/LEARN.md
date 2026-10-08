@@ -185,3 +185,31 @@ One section per phase: what was built, why it is designed that way, and what the
 3. *What happens if two staff approve the same ticket?* The first succeeds; the second gets 409 because the ticket is no longer waiting for review.
 4. *Can a `needs_manual` ticket be approved?* Yes, with a reply the human writes; without one there's nothing to send, so it's refused (422).
 5. *Why are failed agent runs excluded from "average time per step"?* Timeouts and errors would distort how long a working step takes; failures are counted separately in `agent_runs`.
+
+## Phase 7: Front end
+
+**What we built.** A Next.js front end (`frontend/`): staff login; the inbox (tabs for To review / Needs manual / All / Approved / Rejected, filters for category and urgency, badges, refreshes every 5 s); the ticket page (customer message on the left; extracted details, editable draft, checker problems and Approve / Reject / Rerun on the right; a timeline of the four agent steps with timings, expandable to each input and output); a stats page (four numbers, one bar chart, step timings); and a public "New message" form. It runs in Docker Compose next to the API and database. Two Playwright tests drive a real browser through the whole stack.
+
+**How to run it.** `docker compose up --build`, then open http://localhost:3010 and log in (local demo login: `demo@replydesk.dev` / `demo-pass-123`, created with `python -m app.create_user`). Write to the store at http://localhost:3010/new. Browser tests: `cd frontend && npm run e2e`.
+
+**Why it is designed this way.**
+- **Every page is a client component calling our API.** The browser holds the login token and calls FastAPI directly; Next.js only serves the pages. One backend, one source of truth; the front end has no database access.
+- **`page.tsx` files are thin wrappers** that put one client component inside `<Suspense>`. This Next.js version (16, with Cache Components) requires that for components reading the URL (`useSearchParams`, `useParams`), or the build fails.
+- **Login state uses `useSyncExternalStore`**, React's tool for reading an outside store (here `localStorage`), instead of copying it into state in an effect. Clearing the token on a 401 makes every guarded page redirect to login by itself.
+- **The draft box keeps only the reviewer's edits as state** (`null` = untouched). What's shown is `edits ?? draft`. The button says "Approve with edits" as soon as the text differs, matching what the API will record.
+- **Polling, not WebSockets.** The ticket page checks every 1.5 s while the agents work, then stops; the inbox refreshes every 5 s. Simple, and enough for a support inbox.
+- **Filters live in the URL** (`/?status=needs_manual&urgency=high`), so a view can be bookmarked or shared.
+- **The chart has one job (how many tickets per category)**: horizontal bars in one colour, value labels, a hover/focus readout in the header (a floating tooltip covered neighbouring bars), and a "Show table" view so colour is never the only way to read it.
+- **Browser tests run against the real Docker stack** in an isolated copy (own ports and database, fake model): they test the images we'd deploy, cost nothing, and never touch the dev data.
+- **CORS** is set on the API to allow exactly the front end's address; any other site's page is refused.
+
+**Alternatives.** Server components fetching data on the server: faster first paint, but the token would need to be in a cookie and the code splits across server and browser; harder to explain. A UI kit (shadcn, MUI): nicer components, more code I didn't write. A chart library (Recharts): unnecessary for one bar chart; plain HTML bars are accessible and dependency-free. Storing the token in an httpOnly cookie: safer against XSS (scripts can't read it), but the API would need cookie auth and CSRF protection; noted as a next step.
+
+**Verified.** Lint, typecheck and production build pass. Both Playwright tests pass against the Docker stack: (1) log in and approve a drafted reply, then see "Approved without edits"; (2) submit a message as a customer, log in, and see it reach "ready for review" with all four steps in the timeline. I also took screenshots of every page and fixed what they showed (the chart tooltip covered other bars).
+
+**Self-check.**
+1. *Why must `useSearchParams` sit inside `<Suspense>` here?* With Cache Components, Next.js prerenders a static shell; URL data isn't known at build time, so the component that reads it must be in a Suspense boundary that can render a fallback. Without it the build fails.
+2. *What is CORS, and why did the API need it?* Browsers block a page from one origin (localhost:3010) calling another (localhost:8010) unless the API allows it; we allow only the front end's origin.
+3. *Where is the login token stored, and what's the trade-off?* In `localStorage`: simple, but any script on the page could read it. An httpOnly cookie is safer but needs cookie auth and CSRF protection on the API.
+4. *How does the ticket page know when the agents are done?* It polls `GET /tickets/{id}` every 1.5 s while the status is `new` or `processing`, and stops when it changes.
+5. *Why do the browser tests use Docker and the fake model?* They test the same images we'd deploy, run identically on my laptop and in CI, cost no API quota, and give the same answers every time.
