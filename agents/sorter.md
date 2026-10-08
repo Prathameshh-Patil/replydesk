@@ -9,8 +9,8 @@ This file **is** the agent. `backend/app/agents/prompts.py` reads the code block
 user message. The file is read on every call, so an edit takes effect on the next ticket, and
 every change to the agent is a reviewable diff in git.
 
-Model settings (same for every agent, set in `.env`): Gemini (`gemini-3.5-flash`) through its
-OpenAI-compatible API, temperature `0` (same answer for the same message), JSON mode on, reasoning
+Model settings (same for every agent, set in `.env`): the open-weight model `gpt-oss-120b`
+on Groq, through its OpenAI-compatible API, temperature `0` (same answer for the same message), JSON mode on, reasoning
 effort `low`. Each call is stateless: no memory of earlier tickets.
 
 The examples at the end are sent to the model with the instructions. They are deliberately **not** taken from `eval/emails.csv`: examples from the test set would leak answers and inflate the score.

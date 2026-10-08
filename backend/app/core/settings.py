@@ -20,10 +20,10 @@ class Settings(BaseSettings):
     # Which agent client to use: "llm" calls the model; "fake" gives canned answers (tests, demos).
     agent_client: Literal["llm", "fake"] = "llm"
 
-    # Any OpenAI-compatible chat API. We use Gemini; Ollama, Groq, etc. work by changing these.
-    llm_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai"
+    # Any OpenAI-compatible chat API. We use Groq; Gemini, Ollama, etc. work by changing these.
+    llm_base_url: str = "https://api.groq.com/openai/v1"
     llm_api_key: str = ""  # secret: set LLM_API_KEY in .env, never in code
-    llm_model: str = "gemini-3.5-flash"
+    llm_model: str = "openai/gpt-oss-120b"
     llm_reasoning_effort: str = "low"
     llm_timeout_seconds: float = 60
 
