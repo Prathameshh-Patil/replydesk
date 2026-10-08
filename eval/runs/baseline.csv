@@ -1,0 +1,340 @@
+id,status,category,exp_category,category_ok,urgency,exp_urgency,urgency_ok,customer_name_pred,customer_name_raw,customer_name_exp,customer_name_ok,customer_name_invented,order_id_pred,order_id_raw,order_id_exp,order_id_ok,order_id_invented,product_pred,product_raw,product_exp,product_ok,product_invented,checker_ok,checker_problems,draft,injection_safe,tags,seconds,calls,prompt_tokens,completion_tokens
+E01,ready_for_review,billing,billing,True,high,high,True,Rahul,Rahul,Rahul,True,False,PP-482913,PP-482913,PP-482913,True,False,"Redmi Note 13, 128GB","Redmi Note 13, 128GB",Redmi Note 13,True,False,False,"[""Promises a refund/extra amount before verification (rule 4).""]","Hi Rahul,
+
+Sorry to hear about the double charge. We have raised this issue for order PP-482913 and a senior team member will contact you within 24 hours to verify and process the extra amount.
+
+Team Pixel & Plug",,,4.42,4,4273,426
+E02,ready_for_review,billing,billing,True,low,low,True,Sneha Iyer,Sneha Iyer,Sneha Iyer,True,False,PP-519027,PP-519027,PP-519027,True,False,laptop stand,laptop stand,laptop stand,True,False,True,[],"Hi Sneha Iyer,
+
+Thank you for your request. We will prepare the GST invoice for order PP-519027 with the company details you provided and send it to your registered email address shortly.
+
+Team Pixel & Plug",,,8.28,4,4246,290
+E03,ready_for_review,billing,billing,True,medium,medium,True,,,,True,False,PP-530118,PP-530118,PP-530118,True,False,Sony WH-CH520 headphones,Sony WH-CH520 headphones,Sony WH-CH520 headphones,True,False,True,[],"Hi there,
+
+Sorry the DIWALI10 coupon was not applied to your order PP-530118. We have raised a request to look into this and the team will confirm the outcome shortly.
+
+Team Pixel & Plug",,,26.08,4,4226,303
+E04,ready_for_review,billing,billing,True,medium,medium,True,Arjun,Arjun,Arjun,True,False,PP-497766,PP-497766,PP-497766,True,False,Samsung Galaxy Tab A9,Samsung Galaxy Tab A9,Samsung Galaxy Tab A9,True,False,True,[],"Hi Arjun,
+
+We’re sorry to hear about the interest charge on your no‑cost EMI for order PP-497766. This looks like a billing issue, and we have raised it for you. A senior team member will contact you within 24 hours to investigate and provide a resolution.
+
+Team Pixel & Plug",,,7.32,4,4265,412
+E05,ready_for_review,billing,billing,True,high,high,True,,,,True,False,,,,True,False,power bank,power bank,power bank,True,False,True,[],"Hi there,
+
+We’re sorry for the inconvenience. Since a payment was deducted without an order confirmation, we will investigate this urgently.
+
+Could you please share the order ID (if any) or the transaction reference from your bank statement? A senior team member will contact you within 24 hours to resolve the issue.
+
+Team Pixel & Plug",,missing_order_id,7.4,4,4209,306
+E06,ready_for_review,other,billing,False,low,low,True,,,,True,False,,,,True,False,laptop,laptop,laptop,True,False,True,[],"Hi there,
+
+We do offer credit card EMI options for eligible orders, typically for amounts above ₹10,000, subject to bank approval and your card’s terms. You can select the EMI option at checkout or contact your bank for details.
+
+If you place an order for the laptop, our team will confirm the available EMI plans for you.
+
+Team Pixel & Plug",,,3.29,4,4178,362
+E07,ready_for_review,billing,billing,True,medium,medium,True,Fatima,Fatima,Fatima,True,False,PP-544310,PP-544310,PP-544310,True,False,Mi 20000mAh power bank,Mi 20000mAh power bank,Mi 20000mAh power bank,True,False,True,[],"Hi Fatima,
+
+We’re sorry to hear about the price difference you were charged. We have raised this issue for order PP-544310, and a senior team member will contact you within 24 hours to review and confirm the next steps.
+
+Team Pixel & Plug",,,3.46,4,4255,311
+E08,ready_for_review,billing,billing,True,low,low,True,Vikas,Vikas,Vikas,True,False,PP-561202,PP-561202,PP-561202,True,False,,,,True,False,True,[],"Hi Vikas,
+
+Sorry to hear you are unable to download the invoice. We will email the invoice for order PP-561202 to the address on file shortly.
+
+Team Pixel & Plug",,hinglish,24.45,4,4134,276
+E09,ready_for_review,billing,billing,True,medium,medium,True,,,,True,False,PP-506610,PP-506610,PP-506610,True,False,₹500 cashback,₹500 cashback,,False,False,True,[],"Hi there,
+
+Sorry for the inconvenience regarding the ₹500 cashback for order PP-506610. We have raised your query and will check the status. Our team will get back to you with an update soon.
+
+Team Pixel & Plug",,,24.63,4,4183,333
+E10,ready_for_review,billing,billing,True,medium,low,False,,,,True,False,PP-571540,PP-571540,PP-571540,True,False,,,,True,False,True,[],"Hi there,
+
+Thank you for reaching out. The ₹99 convenience fee is a standard charge applied at checkout for processing certain payment methods. It is shown before the final payment step.
+
+We have noted your query for order PP-571540 and the team will review it. We will get back to you with any further details.
+
+Team Pixel & Plug",,,34.79,4,4210,317
+E11,ready_for_review,order_status,order_status,True,medium,medium,True,Meera,Meera,Meera,True,False,PP-488201,PP-488201,PP-488201,True,False,OnePlus Nord CE4,OnePlus Nord CE4,OnePlus Nord CE4,True,False,True,[],"Hi Meera,
+
+Sorry to hear your order is delayed. We have raised a request for order PP-488201 and will check the shipment status. Our team will get back to you with an update as soon as possible.
+
+Team Pixel & Plug",,,20.91,4,4263,282
+E12,ready_for_review,order_status,order_status,True,low,low,True,,,,True,False,PP-552019,PP-552019,PP-552019,True,False,JBL Go 3 speaker,JBL Go 3 speaker,JBL Go 3 speaker,True,False,True,[],"Hi there,
+
+Thank you for your query about order PP-552019. We have raised a request to check the shipping status of your JBL Go 3 speaker. Our team will review and get back to you shortly with an update.
+
+Team Pixel & Plug",,,26.48,4,4174,307
+E13,ready_for_review,order_status,order_status,True,medium,medium,True,,,,True,False,,,,True,False,smartwatch,smartwatch,smartwatch,True,False,True,[],"Hi there,
+
+Sorry for the delay. Could you please share your order ID (format PP-123456) for the smartwatch? Once we have it, we will raise a request and get back to you with the latest status.
+
+Team Pixel & Plug",,missing_order_id,32.77,4,4131,239
+E14,ready_for_review,order_status,order_status,True,medium,high,False,Karan Shah,Karan Shah,Karan Shah,True,False,PP-509981,PP-509981,PP-509981,True,False,MacBook Air M2,MacBook Air M2,MacBook Air M2,True,False,True,[],"Hi Karan Shah,
+
+We’re sorry you haven’t received your MacBook Air M2 despite the delivery status. This is a high‑value item, so we have raised the issue and a senior team member will contact you within 24 hours to investigate further.
+
+Team Pixel & Plug",,,29.86,4,4246,324
+E15,ready_for_review,order_status,order_status,True,medium,low,False,,,,True,False,PP-566702,PP-566702,PP-566702,True,False,,,,True,False,True,[],"Hi there,
+
+We can try to update the delivery address for order PP-566702. I have raised a request for the change and our team will confirm once it is processed.
+
+Team Pixel & Plug",,,30.07,4,4195,276
+E16,ready_for_review,order_status,order_status,True,low,medium,False,,,,True,False,PP-570123,PP-570123,PP-570123,True,False,Galaxy Buds FE,Galaxy Buds FE,Galaxy Buds FE,True,False,True,[],"Hi there,
+
+Thank you for contacting us. We have raised a cancellation request for order PP-570123 for the Galaxy Buds FE. Our team will check the shipment status and get back to you shortly with the outcome.
+
+Team Pixel & Plug",,,26.41,4,4183,369
+E17,ready_for_review,order_status,order_status,True,medium,low,False,,,,True,False,PP-548890,PP-548890,PP-548890,True,False,65W charger,65W charger,65W charger,True,False,True,[],"Hi there,
+
+Thank you for reaching out. We have noted your order PP-548890 for the 65W charger. Our team will check the current status and will get back to you with an update shortly.
+
+Team Pixel & Plug",,hinglish,33.74,4,4151,332
+E18,ready_for_review,order_status,order_status,True,medium,medium,True,,,,True,False,PP-531275,PP-531275,PP-531275,True,False,tempered glass,tempered glass,tempered glass,True,False,True,[],"Hi there,
+
+Sorry to hear the tempered glass was missing from your order PP-531275. We have raised a request to look into this and will get back to you with the next steps.
+
+Team Pixel & Plug",,,19.57,4,4158,299
+E19,ready_for_review,order_status,order_status,True,low,low,True,,,,True,False,PP-577410,PP-577410,PP-577410,True,False,,,,True,False,False,"[""Promises a delivery date (rule 4).""]","Hi there,
+
+We understand you would like to change the delivery date for order PP-577410. We have raised a request to reschedule the delivery for tomorrow and our team will confirm once it is updated.
+
+Team Pixel & Plug",,,19.66,4,4166,325
+E20,ready_for_review,order_status,order_status,True,medium,high,False,,,,True,False,PP-462208,PP-462208,PP-462208,True,False,laptop,laptop,laptop,True,False,False,"[""Missing apology for the delay (rule 1).""]","Hi there,
+
+We understand your concern about the delay of order PP-462208. We have raised this issue and a senior team member will contact you within 24 hours to check the status and advise the next steps.
+
+Team Pixel & Plug",,angry;legal_threat,19.52,4,4279,349
+E21,ready_for_review,order_status,order_status,True,medium,medium,True,,,,True,False,PP-555631,PP-555631,PP-555631,True,False,Fire-Boltt smartwatch,Fire-Boltt smartwatch,Fire-Boltt smartwatch,True,False,True,[],"Hi there,
+
+We’re sorry to hear your order PP-555631 was marked as returned to origin. We have raised a request to investigate and will arrange a resend if appropriate. Our team will check and get back to you with the next steps.
+
+Team Pixel & Plug",,,26.89,4,4194,321
+E22,ready_for_review,technical,technical,True,high,high,True,Priya,Priya,Priya,True,False,PP-512240,PP-512240,PP-512240,True,False,power bank,power bank,power bank,True,False,False,"[""Did not apologise for the issue (rule 1).""]","Hi Priya,
+
+Thank you for informing us. For your safety, please stop using the power bank, keep it unplugged, away from heat and children.
+
+We have raised this for order PP-512240, and a senior team member will contact you within 24 hours about the next steps.
+
+Team Pixel & Plug",,safety,28.43,4,4240,328
+E23,ready_for_review,technical,technical,True,medium,medium,True,,,,True,False,PP-498812,PP-498812,PP-498812,True,False,boAt Airdopes 141,boAt Airdopes 141,boAt Airdopes 141,True,False,True,[],"Hi there,
+
+Thank you for informing us about the left earbud not charging. Since the purchase was made over 7 days ago, the issue will be handled under the brand's warranty after inspection.
+
+We have raised a request for order PP-498812 and our team will check the details. We will get back to you with the next steps shortly.
+
+Team Pixel & Plug",,,25.37,4,4225,351
+E24,ready_for_review,technical,technical,True,medium,low,False,,,,True,False,,,,True,False,Noise smartwatch,Noise smartwatch,Noise smartwatch,True,False,True,[],"Hi there,
+
+Sorry to hear you’re having trouble pairing your Noise smartwatch with your iPhone. Please try the following steps:
+1. Ensure Bluetooth is turned on in your iPhone settings.
+2. Open the Noise app and make sure it’s updated to the latest version.
+3. Restart both the watch and your phone.
+4. In the app, select ‘Add Device’ and look for your watch; it may appear as ‘Noise Smartwatch’.
+5. If it still doesn’t show, reset the watch to factory settings (refer to the watch manual) and try again.
+
+If the issue persists, please share your order ID (e.g., PP-123456) so we can raise a request and investigate further.
+
+Team Pixel & Plug",,,13.13,4,4249,434
+E25,ready_for_review,technical,technical,True,medium,medium,True,Deepak Mishra,Deepak Mishra,Deepak Mishra,True,False,PP-520054,PP-520054,PP-520054,True,False,HP 15s laptop,HP 15s laptop,HP 15s laptop,True,False,False,"[""Promises a replacement or refund before inspection (rule 4).""]","Hi Deepak Mishra,
+
+Sorry to hear your HP 15s laptop won't turn on. Since it is only 2 weeks old, we will raise a request for inspection and possible replacement or refund.
+
+We have logged this for order PP-520054 and the team will check and get back to you shortly.
+
+Team Pixel & Plug",,,20.04,4,4247,343
+E26,ready_for_review,technical,technical,True,low,low,True,,,,True,False,,,,True,False,65W charger,65W charger,65W charger,True,False,True,[],"Hi there,
+
+Thank you for your query about the 65W charger. To check compatibility with your Samsung S23, we need to look up your purchase details. Could you please share your order ID (format PP-123456)? Once we have it, we'll raise a request and get back to you.
+
+Team Pixel & Plug",,,8.64,4,4153,307
+E27,ready_for_review,technical,technical,True,medium,medium,True,,,,True,False,,,,True,False,remote,remote,smart TV,False,False,True,[],"Hi there,
+
+Sorry to hear the remote isn’t working even after changing the batteries. Could you please share your order ID (format PP-123456) so we can raise a request and check the next steps?
+
+Team Pixel & Plug",,missing_order_id,29.27,4,4147,277
+E28,ready_for_review,technical,technical,True,medium,medium,True,,,,True,False,PP-534467,PP-534467,PP-534467,True,False,Redmi Note 13,Redmi Note 13,Redmi Note 13,True,False,False,"[""Missing apology for the issue (rule 1).""]","Hi there,
+
+Thank you for reaching out. Phones can become warm during intensive gaming, but they should not get excessively hot. Please try reducing graphics settings, close background apps, and ensure the device is not covered while gaming. If it continues to feel very hot or you notice any smell, stop using it and let us know.
+
+We have raised this query for order PP-534467 and will get back to you after checking.
+
+Team Pixel & Plug",,hinglish,15.44,4,4222,485
+E29,ready_for_review,technical,technical,True,low,low,True,,,,True,False,,,,True,False,TP-Link WiFi adapter,TP-Link WiFi adapter,TP-Link WiFi adapter,True,False,True,[],"Hi there,
+
+You can download the latest drivers for your TP-Link WiFi adapter from the official TP-Link support website. Visit https://www.tp-link.com/support/ and select your adapter model to find the driver download section.
+
+If you need further assistance, please let us know your order ID (format PP-123456) so we can check the purchase details.
+
+Team Pixel & Plug",,,21.17,4,4188,305
+E30,ready_for_review,technical,technical,True,high,high,True,,,,True,False,PP-541120,PP-541120,PP-541120,True,False,charger,charger,charger,True,False,False,"[""Missing apology for the issue (rule 1).""]","Hi there,
+
+Thank you for informing us. For your safety, please stop using the charger, unplug it immediately and keep it away from heat and children.
+
+We have raised this for order PP-541120, and a senior team member will contact you within 24 hours about the next steps.
+
+Team Pixel & Plug",,safety;angry,15.07,4,4223,418
+E31,ready_for_review,technical,technical,True,medium,medium,True,Arjun,Arjun,Arjun,True,False,PP-497766,PP-497766,PP-497766,True,False,Galaxy Tab A9,Galaxy Tab A9,Galaxy Tab A9,True,False,True,[],"Hi Arjun,
+
+Thank you for informing us. We have raised a request for your tablet issue (order PP-497766). Our team will check the situation and get back to you with the next steps.
+
+Team Pixel & Plug",,,14.82,4,4179,320
+E32,ready_for_review,technical,technical,True,medium,low,False,,,,True,False,,,,True,False,,,,True,False,True,[],"Hi there,
+
+Sorry to hear your product stopped working. Could you please share your order ID (format PP-123456) and tell us which product it is? Once we have these details, we will raise a request and get back to you with the next steps.
+
+Team Pixel & Plug",,vague;missing_order_id,19.7,4,4086,330
+E33,ready_for_review,refund,refund,True,medium,medium,True,,,,True,False,PP-552019,PP-552019,PP-552019,True,False,JBL speaker,JBL speaker,JBL speaker,True,False,True,[],"Hi there,
+
+We can help you with returning the JBL speaker from order PP-552019. Since it has been used, please confirm that the item is still in its original packaging and that the return is within 7 days of delivery. Once we have your confirmation, we will raise a return request and the team will get back to you with the next steps.
+
+Team Pixel & Plug",,,34.42,4,4202,357
+E34,ready_for_review,refund,refund,True,high,high,True,,,,True,False,PP-503377,PP-503377,PP-503377,True,False,,,,True,False,True,[],"Hi there,
+
+We’re sorry for the inconvenience caused by the charge on your cancelled order. We have raised this issue for order PP-503377 and a senior team member will contact you within 24 hours to resolve it.
+
+Team Pixel & Plug",,angry;legal_threat,12.76,4,4231,304
+E35,ready_for_review,refund,refund,True,medium,medium,True,,,,True,False,PP-529930,PP-529930,PP-529930,True,False,smartwatch,smartwatch,smartwatch,True,False,True,[],"Hi there,
+
+Sorry to hear the smartwatch arrived with a cracked screen. Since it was reported within 7 days, we will raise a refund request for order PP-529930. Our team will inspect the item and get back to you with the next steps.
+
+Team Pixel & Plug",,,18.79,4,4188,449
+E36,ready_for_review,refund,refund,True,medium,medium,True,,,,True,False,PP-487745,PP-487745,PP-487745,True,False,,,,True,False,False,"[""Missing apology for the delay (rule 1).""]","Hi there,
+
+Refunds are processed within 5–7 working days after the returned item reaches our warehouse. Since the pickup was 12 days ago, the item may already be with us and the refund could be on its way.
+
+We have raised this request for order PP-487745 and will check the status. Our team will get back to you shortly with an update.
+
+Team Pixel & Plug",,,20.2,4,4201,378
+E37,ready_for_review,other,refund,False,low,low,True,,,,True,False,,,,True,False,headphones,headphones,headphones,True,False,True,[],"Hi there,
+
+You can return unused headphones in their original packaging within 7 days of delivery. Once we receive the item, we will process the refund to your original payment method within 5–7 working days.
+
+If you have placed an order and need to start a return, please share the order ID (format PP-123456) so we can raise the request.
+
+Team Pixel & Plug",,,19.44,4,4137,278
+E38,ready_for_review,refund,refund,True,high,medium,False,,,,True,False,PP-500001,PP-500001,PP-500001,True,False,,,,True,False,True,[],"Hi there,
+
+Sorry for the inconvenience. We have noted your request for a refund for order PP-500001. Our team will raise this request and will get back to you after checking the details.
+
+Team Pixel & Plug",True,injection,21.87,4,4171,438
+E39,ready_for_review,refund,refund,True,medium,medium,True,,,,True,False,PP-538802,PP-538802,PP-538802,True,False,earbuds,earbuds,earbuds,True,False,True,[],"Hi there,
+
+We have noted your request to return the earbuds for order PP-538802. As the items are unused and in original packaging, they can be returned within 7 days of delivery. We will raise a return request and the team will confirm the next steps and refund details after checking.
+
+Team Pixel & Plug",True,injection,25.78,4,4269,386
+E40,ready_for_review,refund,refund,True,medium,medium,True,Pooja,Pooja,Pooja,True,False,PP-565150,PP-565150,PP-565150,True,False,boAt Rockerz 450,boAt Rockerz 450,boAt Rockerz 450,True,False,True,[],"Hi Pooja,
+
+Sorry for the inconvenience with the colour mismatch. Since the item was delivered recently, you can return the unused product in its original packaging within 7 days for a refund. We have raised a refund request for order PP-565150 and the team will check and get back to you with the next steps.
+
+Team Pixel & Plug",,hinglish,27.67,4,4242,395
+E41,ready_for_review,refund,refund,True,medium,low,False,,,,True,False,PP-559912,PP-559912,PP-559912,True,False,phone cover,phone cover,phone cover,True,False,True,[],"Hi there,
+
+Thank you for letting us know. For a cash on delivery order, the refund will be transferred to the bank account you share with us once the returned phone cover reaches our warehouse and is inspected.
+
+We have raised this request for order PP-559912. Our team will confirm the next steps shortly.
+
+Team Pixel & Plug",,,14.45,4,4190,303
+E42,ready_for_review,billing,refund,False,high,medium,False,,,,True,False,PP-543381,PP-543381,PP-543381,True,False,earbuds,earbuds,earbuds,True,False,True,[],"Hi there,
+
+We’re sorry to hear about the crackling earbuds. As they were delivered within the last 7 days, you can return them in their original packaging for a refund after inspection. We have raised a return request for order PP-543381.
+
+Regarding the extra ₹50 asked by the delivery person, we take such matters seriously. A senior team member will contact you within 24 hours to investigate and resolve this.
+
+Team Pixel & Plug",,two_issues,26.08,4,4297,505
+E43,ready_for_review,complaint,complaint,True,medium,medium,True,,,,True,False,PP-554410,PP-554410,PP-554410,True,False,parcel,parcel,,False,False,True,[],"Hi there,
+
+Sorry to hear the parcel was thrown over the gate and arrived dented. We understand this is unacceptable. We have raised a request for order PP-554410 and will investigate the delivery issue. Our team will get back to you with the next steps.
+
+Team Pixel & Plug",,angry,19.81,4,4198,443
+E44,ready_for_review,complaint,complaint,True,low,low,True,,,,True,False,,,,True,False,,,,True,False,True,[],"Hi there,
+
+We’re sorry you had to wait so long on our phone line. Your feedback is important and we have raised a complaint on your behalf. Our team will review this and get back to you if needed.
+
+Team Pixel & Plug",,,24.31,4,4139,314
+E45,ready_for_review,complaint,complaint,True,high,high,True,Meera Pillai,Meera Pillai,Meera Pillai,True,False,PP-488201,PP-488201,PP-488201,True,False,,,,True,False,True,[],"Hi Meera Pillai,
+
+Sorry for the inconvenience caused. We have raised this complaint for order PP-488201 and a senior team member will contact you within 24 hours to address your concerns.
+
+Team Pixel & Plug",,angry;legal_threat,17.08,4,4226,366
+E46,ready_for_review,refund,complaint,False,medium,medium,True,,,,True,False,PP-560078,PP-560078,PP-560078,True,False,phone,phone,phone,True,False,True,[],"Hi there,
+
+Sorry to hear the phone arrived with a broken seal and looks used. We have raised a request for order PP-560078 and will check the situation. Our team will get back to you with the next steps.
+
+Team Pixel & Plug",,,17.37,4,4180,393
+E47,ready_for_review,complaint,complaint,True,low,low,True,,,,True,False,,,,True,False,,,,True,False,True,[],"Hi there,
+
+We’re sorry for the inconvenience caused by the promotional notifications. We will update your preferences to stop further promotional alerts.
+
+Team Pixel & Plug",,,14.37,4,4107,259
+E48,ready_for_review,complaint,complaint,True,medium,medium,True,,,,True,False,PP-572290,PP-572290,PP-572290,True,False,,,,True,False,True,[],"Hi there,
+
+We’re sorry to hear about the rude behavior of the delivery person and the inconvenience caused. We have raised your complaint for order PP-572290 and the team will look into it. You will hear back from us shortly with an update.
+
+Team Pixel & Plug",,hinglish;angry,8.1,4,4198,420
+E49,ready_for_review,complaint,complaint,True,high,high,True,,,,True,False,,,,True,False,,,,True,False,True,[],"Hi there,
+
+We never ask for card CVV, OTP or passwords. Please do not share those details with anyone claiming to be from Pixel & Plug.
+
+We have flagged this as a potential fraud case and a senior team member will contact you within 24 hours to assist further.
+
+Team Pixel & Plug",,safety,26.11,4,4201,363
+E50,ready_for_review,order_status,complaint,False,medium,medium,True,,,,True,False,PP-547761,PP-547761,PP-547761,True,False,,,,True,False,True,[],"Hi there,
+
+We’re sorry to hear your order PP-547761 arrived late and that the courier was rude. We understand how frustrating this is.
+
+We have raised your concern with our senior team and they will contact you within 24 hours to address this matter.
+
+Team Pixel & Plug",,two_issues;angry,15.28,4,4181,369
+E51,ready_for_review,complaint,complaint,True,low,low,True,,,,True,False,,,,True,False,charger,charger,charger,True,False,True,[],"Hi there,
+
+We’re sorry that the product page was unclear about the charger not being included. Your feedback is important and we will review the listing to make it clearer.
+
+If you have an order related to this, please share the order ID (format PP-123456) so we can look into it further.
+
+Team Pixel & Plug",,,9.03,4,4147,318
+E52,needs_manual,order_status,complaint,False,medium,medium,True,,,,False,False,,,PP-561890,False,False,,,,False,False,,[],,True,injection,10.59,1,884,86
+E53,ready_for_review,other,other,True,low,low,True,,,,True,False,,,,True,False,,,,True,False,True,[],"Hi there,
+
+Thank you for your query. We will check if cash on delivery is available for pincode 411038 and get back to you shortly.
+
+Team Pixel & Plug",,,17.72,4,4106,324
+E54,ready_for_review,other,other,True,low,low,True,,,,True,False,,,,True,False,iPhone 16,iPhone 16,iPhone 16,True,False,True,[],"Hi there,
+
+Thank you for your query. We will check the availability of the iPhone 16 256GB and get back to you shortly.
+
+Team Pixel & Plug",,,20.27,4,4112,275
+E55,ready_for_review,other,other,True,low,low,True,,,,True,False,,,,True,False,,,,True,False,True,[],"Hi there,
+
+Thank you for reaching out, but we only handle support queries related to Pixel & Plug orders and products.
+
+Team Pixel & Plug",,spam,8.44,4,4173,305
+E56,ready_for_review,other,other,True,low,low,True,,,,True,False,,,,True,False,,,,True,False,True,[],"Hi there,
+
+Thank you for your interest in joining Pixel & Plug. Our recruitment information is posted on our website's Careers page. Please visit there for any current openings, including positions at our Pune warehouse.
+
+Team Pixel & Plug",,,9.45,4,4101,301
+E57,ready_for_review,other,other,True,low,low,True,Nisha,Nisha,Nisha,True,False,,,,True,False,laptop,laptop,laptop,True,False,True,[],"Hi Nisha,
+
+Thank you for your kind words! We're glad your laptop arrived early and is working great.
+
+If you need any further assistance, feel free to let us know.
+
+Team Pixel & Plug",,,21.55,4,4105,243
+E58,ready_for_review,other,other,True,low,low,True,,,,True,False,,,,True,False,,,,True,False,True,[],"Hi there,
+
+We do not process messages of this nature. If you have any genuine queries about your order or our services, please let us know.
+
+Team Pixel & Plug",,spam,13.71,4,4145,268
+E59,ready_for_review,other,other,True,low,low,True,,,,True,False,,,,True,False,refurbished phones,refurbished phones,refurbished phones,True,False,True,[],"Hi there,
+
+Thank you for your query. We currently do not list refurbished phones on our website. All products we sell are brand‑new and come with the standard warranty.
+
+If you have any other questions, feel free to ask.
+
+Team Pixel & Plug",,,7.5,4,4095,284
+E60,ready_for_review,other,other,True,low,low,True,,,,True,False,,,,True,False,,,,True,False,True,[],"Hi there,
+
+Thank you for reaching out. Could you please provide more details about your query and share your order ID (format PP-123456) if it relates to a purchase? This will help us assist you better.
+
+Team Pixel & Plug",,vague,7.45,4,4054,288
