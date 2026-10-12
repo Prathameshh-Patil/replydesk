@@ -1,0 +1,32 @@
+# Render Blueprint for the API (https://render.com/docs/blueprint-spec). Render reads this file
+# from the repo: New > Blueprint > pick this repo. The database is on Neon, the front end on Vercel.
+services:
+  - type: web
+    name: replydesk-api
+    runtime: docker
+    plan: free
+    # Singapore: closest Render region to India, and next to Neon's Singapore region.
+    region: singapore
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .  # the repo root, so the image can include agents/*.md
+    healthCheckPath: /health
+    # Deploy every push to main, but only after GitHub Actions CI is green.
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: JWT_SECRET
+        generateValue: true  # Render creates a random secret; nobody needs to know it
+      # Secrets and addresses: Render asks for these once, when the Blueprint is created.
+      - key: DATABASE_URL  # Neon's connection string (postgresql://...?sslmode=require)
+        sync: false
+      - key: LLM_API_KEY  # the Groq key
+        sync: false
+      - key: CORS_ORIGINS  # the Vercel address, e.g. https://replydesk.vercel.app
+        sync: false
+      - key: AGENT_CLIENT
+        value: llm
+      - key: DAILY_TICKET_LIMIT
+        value: "25"
+      - key: DEMO_EMAIL
+        value: demo@replydesk.dev
