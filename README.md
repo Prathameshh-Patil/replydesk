@@ -4,7 +4,7 @@
 
 Built for a small online electronics store (Pixel & Plug, fictional) whose three support staff answer about 150 emails a day. Four small AI agents sort each message, pull out the order details, draft a reply and check it against the store's rules. A person approves, edits or rejects every reply. Nothing is sent without a human click.
 
-**Live demo:** @@LIVE_URL@@ → **Log in → Try the demo** (no password). Or write in as a customer at **New message**. The free server sleeps when idle, so the first load can take a minute.
+**Live demo:** **https://replydesk-kappa.vercel.app** → **Log in → Try the demo** (no password). Or write in as a customer at **New message**. The free server sleeps when idle, so the first load can take a minute.
 
 ![Ticket page: the customer message, extracted details, the AI draft and the four agent steps](docs/img/ticket.png)
 
@@ -33,7 +33,20 @@ flowchart LR
 
 Measured by [`eval/run_eval.py`](eval/run_eval.py) on 60 hand-labelled messages (including angry, Hinglish, two-problem, missing-detail and three prompt-injection messages), sent through the real pipeline. Full history: [`docs/RESULTS.md`](docs/RESULTS.md).
 
-@@RESULTS@@
+| Measure | First version (`baseline`) | Improved sorter (`sorter-v2`) |
+|---|---|---|
+| Category accuracy | 90% | **97%** |
+| Urgency accuracy | 82% | **87%** |
+| Customer name / order ID correct | 98% / 98% | 98% / 98% |
+| Product correct | 93% | 95% |
+| Details invented when the message had none | 0 | 0 |
+| Checker passed the draft | 86% | 86% |
+| Prompt-injection messages handled safely | 3 of 3 | 3 of 3 |
+| Time per message (4 agents) | 18.8 s | 22.3 s |
+| Tokens per message | 4,467 | 4,854 |
+| Cost for 60 messages | $0 on the free tier ($0.05 at list price) | $0 ($0.05) |
+
+The change between the two runs was only the sorter's prompt: urgency rules checked in order, and clearer complaint / billing / refund rules. Urgency is still the weakest measure; most remaining misses are "high" vs "medium" judgement calls.
 
 Reproduce: start the database (`docker compose up -d db`), put a Groq key in `.env`, then `backend/.venv/bin/python eval/run_eval.py --run my-run`.
 
@@ -45,7 +58,7 @@ Reproduce: start the database (`docker compose up -d db`), put a Groq key in `.e
 | **FastAPI + Pydantic** | The API; Pydantic also validates every agent's JSON output. |
 | **SQLAlchemy + PostgreSQL + Alembic** | Tickets, users and the audit trail of agent calls; migrations version the schema. |
 | **gpt-oss-120b on Groq** (OpenAI-compatible API) | The language model. All calls go through one file, so the provider is configuration. |
-| **pytest + Playwright** | 82 API tests on a real Postgres; 2 browser tests on the whole Docker stack. A fake model keeps tests offline and free. |
+| **pytest + Playwright** | 84 API tests on a real Postgres; 2 browser tests on the whole Docker stack. A fake model keeps tests offline and free. |
 | **Docker Compose** | The whole app with one command, the same images locally, in CI and in production. |
 | **GitHub Actions** | Lint, migration check, tests, front-end build and browser tests on every pull request. |
 | **Neon + Render + Vercel** | Free hosting for the database, API and front end ([`docs/DEPLOY.md`](docs/DEPLOY.md)). |
@@ -58,10 +71,9 @@ Needs Docker. One command, then open http://localhost:3010:
 git clone https://github.com/Prathameshh-Patil/replydesk.git && cd replydesk
 cp .env.example .env          # add a free Groq key as LLM_API_KEY, or set AGENT_CLIENT=fake
 docker compose up --build
-docker compose exec api python -m app.create_user "Demo Staff" demo@replydesk.dev 'demo-pass-123'
 ```
 
-Then **Log in → Try the demo**, and write in as a customer at http://localhost:3010/new. API docs: http://localhost:8010/docs. Without a Groq key, `AGENT_CLIENT=fake` gives canned agent answers so the whole flow still works.
+The API creates the demo staff account on start-up, so just **Log in → Try the demo**, and write in as a customer at http://localhost:3010/new. API docs: http://localhost:8010/docs. Without a Groq key, `AGENT_CLIENT=fake` gives canned agent answers so the whole flow still works.
 
 ## Run the tests
 
