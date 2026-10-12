@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.security import create_access_token, get_current_user, verify_password
+from app.core.settings import settings
 from app.models import User
 from app.schemas.auth import Token, UserOut
 
@@ -18,6 +19,18 @@ def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
     # Same message for "no such user" and "wrong password", so attackers can't tell which.
     if user is None or not verify_password(form.password, user.password_hash):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Incorrect email or password")
+    return Token(access_token=create_access_token(user.id))
+
+
+@router.post("/demo", response_model=Token)
+def demo_login(db: Session = Depends(get_db)) -> Token:
+    """One-click login for the live demo, as the staff account named in DEMO_EMAIL.
+
+    Off (404) unless DEMO_EMAIL is set, so a real deployment never has a password-free door.
+    """
+    user = db.scalar(select(User).where(User.email == settings.demo_email.strip().lower()))
+    if not settings.demo_email or user is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Demo login is not enabled here")
     return Token(access_token=create_access_token(user.id))
 
 

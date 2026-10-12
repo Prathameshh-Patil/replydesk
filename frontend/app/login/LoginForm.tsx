@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ApiError, login } from "@/lib/api";
+import { ApiError, demoLogin, login } from "@/lib/api";
 
 export function LoginForm() {
   const router = useRouter();
@@ -13,10 +13,14 @@ export function LoginForm() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    await attempt(() => login(email, password));
+  }
+
+  async function attempt(logIn: () => Promise<void>) {
     setBusy(true);
     setError(null);
     try {
-      await login(email, password);
+      await logIn();
       router.push("/");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Could not reach the server");
@@ -42,6 +46,16 @@ export function LoginForm() {
         className="w-full rounded bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700 disabled:opacity-50">
         {busy ? "Logging in…" : "Log in"}
       </button>
+      {busy && (
+        <p className="text-sm text-slate-500">The free demo server sleeps when idle; the first login can take up to a minute.</p>
+      )}
+      <div className="border-t border-slate-200 pt-4 text-center">
+        <button type="button" disabled={busy} onClick={() => attempt(demoLogin)}
+          className="w-full rounded border border-slate-300 px-4 py-2 font-medium hover:bg-slate-50 disabled:opacity-50">
+          Try the demo (no password)
+        </button>
+        <p className="mt-2 text-xs text-slate-500">Logs you in as the shared demo support account.</p>
+      </div>
     </form>
   );
 }

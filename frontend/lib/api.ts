@@ -75,3 +75,9 @@ export async function login(email: string, password: string): Promise<void> {
   });
   token.set(result.access_token);
 }
+
+/** One-click login as the demo staff account (only works where the API has DEMO_EMAIL set). */
+export async function demoLogin(): Promise<void> {
+  const result = await api<{ access_token: string }>("/auth/demo", { method: "POST" });
+  token.set(result.access_token);
+}

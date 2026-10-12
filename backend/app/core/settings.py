@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import Literal
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -30,8 +31,24 @@ class Settings(BaseSettings):
     # Web addresses allowed to call the API from a browser (comma-separated): the front end.
     cors_origins: str = "http://localhost:3010"
 
+    # Live demo only. Most new tickets per day (UTC), so visitors can't use up the model's free
+    # quota; 0 means no limit.
+    daily_ticket_limit: int = 0
+    # Live demo only. If set, POST /auth/demo logs anyone in as this existing staff account
+    # (the one-click demo login); empty means the endpoint is switched off.
+    demo_email: str = ""
+
     # Folder with sorter.md, extractor.md, ... (repo-root/agents locally; set in the Docker image)
     agents_dir: Path = Path(__file__).resolve().parents[3] / "agents"
+
+    @field_validator("database_url")
+    @classmethod
+    def use_psycopg_driver(cls, url: str) -> str:
+        """Hosted databases (Neon, Render) give postgresql:// URLs; SQLAlchemy needs the driver."""
+        for prefix in ("postgresql://", "postgres://"):
+            if url.startswith(prefix):
+                return "postgresql+psycopg://" + url.removeprefix(prefix)
+        return url
 
 
 settings = Settings()
