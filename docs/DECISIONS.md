@@ -55,3 +55,12 @@ One line per decision, with the reason.
 - No UI kit or chart library: plain Tailwind and HTML bars for one chart; fewer dependencies, all code explainable.
 - Front end on port 3010 (pattern with 8010/5442); browser tests run in an isolated Compose project on 3020/8020/5452 with the fake model.
 - Playwright tests run against the Docker stack (same images as deployment), in CI too.
+- Hosting: Neon (Postgres), Render free web service (API, our Dockerfile), Vercel Hobby (front end): all free; Render's own free Postgres is deleted after 30 days, Neon's isn't.
+- Render and Neon in Singapore: the closest regions to India, and next to each other.
+- `render.yaml` Blueprint with `autoDeployTrigger: checksPass`: the API's hosting is a reviewed file in the repo, and `main` deploys only after CI is green.
+- The API listens on `$PORT` (default 8000): Render chooses the port; Compose still works unchanged.
+- `postgresql://` URLs get the `+psycopg` driver added in settings: paste Neon's string as-is.
+- Migrations and the demo account are created from the laptop against Neon: Render's free tier has no shell.
+- `DAILY_TICKET_LIMIT` (25 on the demo) counts tickets created since midnight UTC, for the public form and CSV import: protects the free Groq quota (~40 tickets/day) with a clear 429 message.
+- One-click demo login (`POST /auth/demo`, `DEMO_EMAIL`): visitors try the staff side without a password; empty `DEMO_EMAIL` switches it off for a real deployment.
+- Demo tickets in `demo/tickets.csv`, written for the demo (not from the eval set).
