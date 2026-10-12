@@ -81,7 +81,7 @@ backend/     FastAPI app: routers, models, pipeline.py, agents/client.py; Alembi
 frontend/    Next.js app; Playwright tests in e2e/
 eval/        emails.csv (60 labelled messages), run_eval.py, runs/ (per-message results)
 demo/        sample tickets for the live demo
-docs/        BRIEF, DEPLOY, RESULTS, DECISIONS, LEARN, PITCH, INTERVIEW
+docs/        BRIEF, DEPLOY, RESULTS, DECISIONS
 ```
 
 ## Limits and next steps
