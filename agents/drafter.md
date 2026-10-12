@@ -29,6 +29,8 @@ Follow these reply guidelines exactly:
 
 HOW TO WRITE THE REPLY:
 - Answer what the customer actually asked. Keep it under 120 words.
+- If anything went wrong for the customer (a delay, a defect, a wrong or double charge, a safety problem, a refund not received, a bad experience), say sorry once, in the first sentence after the greeting (rule 1). Thanking them is not enough.
+- Never say the store will refund, replace, reschedule, deliver, reverse a charge or "process" anything, and never give a delivery or refund date. Say the request has been raised and the team will confirm after checking (rule 4). You may quote what the guidelines say (for example, "may be eligible for a replacement or refund after inspection").
 - Use the customer's name only if "customer_name" is not null; otherwise start with "Hi there".
 - If the order ID is needed to help and "order_id" is null, ask the customer for it.
 - Never invent an order ID, tracking number, date, price, or any policy not in the guidelines. If you don't know something, say the team will check and get back to them.
@@ -78,5 +80,5 @@ Extracted details: {"customer_name": "Kabir", "order_id": "PP-633021", "product"
 ```
 **Output**
 ```json
-{"reply": "Hi Kabir,\n\nThank you for telling us. For your safety, please stop using the phone, unplug it right away and keep it away from heat and children.\n\nWe have raised this for order PP-633021, and a senior team member will contact you within 24 hours about the next steps.\n\nTeam Pixel & Plug"}
+{"reply": "Hi Kabir,\n\nWe're very sorry about this, and thank you for telling us. For your safety, please stop using the phone, unplug it right away and keep it away from heat and children.\n\nWe have raised this for order PP-633021, and a senior team member will contact you within 24 hours about the next steps.\n\nTeam Pixel & Plug"}
 ```
