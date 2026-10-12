@@ -5,7 +5,7 @@ set -e
 cd "$(dirname "$0")/../.."
 
 export COMPOSE_PROJECT_NAME=replydesk-e2e
-export API_PORT=8020 DB_PORT=5452 WEB_PORT=3020 AGENT_CLIENT=fake
+export API_PORT=8020 DB_PORT=5452 WEB_PORT=3020 AGENT_CLIENT=fake DEMO_EMAIL=e2e@replydesk.dev
 
 docker compose up -d --build --wait
 docker compose exec -T api python -m app.create_user "E2E Staff" e2e@replydesk.dev e2e-password-123 || true

@@ -51,6 +51,7 @@ export function NewMessageForm() {
       <div>
         <h1 className="text-xl font-semibold">Write to Pixel &amp; Plug support</h1>
         <p className="text-sm text-slate-500">Pixel &amp; Plug is a made-up electronics store. Try anything: a late order, a refund, an angry complaint.</p>
+        <p className="mt-1 text-sm text-slate-500">This is a public demo: other visitors can read what you write, so use a made-up name and email.</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block"><span className="text-sm text-slate-600">Your name</span>
