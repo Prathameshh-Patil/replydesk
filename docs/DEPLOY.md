@@ -21,17 +21,7 @@ Three pieces need hosting, each on a free tier:
 
 1. Sign in at https://neon.com, **New project**, name `replydesk`, Postgres 17, region **AWS Asia Pacific (Singapore)**.
 2. **Connect** → turn **Connection pooling off** (migrations want a direct connection) → copy the connection string. It looks like `postgresql://user:password@ep-xxx.ap-southeast-1.aws.neon.tech/neondb?sslmode=require`. It is a secret: don't paste it anywhere but Render and your own terminal.
-3. Create the tables and the demo login from your laptop (the API's code adds the `+psycopg` driver to the URL by itself):
-
-   ```sh
-   cd backend
-   export DATABASE_URL='<the Neon connection string>'
-   .venv/bin/alembic upgrade head
-   .venv/bin/python -m app.create_user "Demo Staff" demo@replydesk.dev '<a long random password>'
-   unset DATABASE_URL
-   ```
-
-   The demo account's password is never needed: the "Try the demo" button logs in without it. Keep it long and secret so nobody can use it elsewhere.
+3. Nothing else to do here: when the API starts it runs the migrations (`alembic upgrade head`) and creates the demo staff account named in `DEMO_EMAIL` with a random password nobody knows (`app/demo.py`). The only way into that account is the "Try the demo" button.
 
 ### 2. API (Render)
 

@@ -60,7 +60,7 @@ One line per decision, with the reason.
 - `render.yaml` Blueprint with `autoDeployTrigger: checksPass`: the API's hosting is a reviewed file in the repo, and `main` deploys only after CI is green.
 - The API listens on `$PORT` (default 8000): Render chooses the port; Compose still works unchanged.
 - `postgresql://` URLs get the `+psycopg` driver added in settings: paste Neon's string as-is.
-- Migrations and the demo account are created from the laptop against Neon: Render's free tier has no shell.
+- The API creates the demo account on start-up (`app/demo.py`, random password): Render's free tier has no shell, and nobody needs the database password on a laptop.
 - `DAILY_TICKET_LIMIT` (25 on the demo) counts tickets created since midnight UTC, for the public form and CSV import: protects the free Groq quota (~40 tickets/day) with a clear 429 message.
 - One-click demo login (`POST /auth/demo`, `DEMO_EMAIL`): visitors try the staff side without a password; empty `DEMO_EMAIL` switches it off for a real deployment.
 - Demo tickets in `demo/tickets.csv`, written for the demo (not from the eval set).

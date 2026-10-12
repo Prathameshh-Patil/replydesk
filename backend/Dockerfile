@@ -17,6 +17,6 @@ COPY backend/app ./app
 COPY agents ./agents
 
 EXPOSE 8000
-# Bring the database up to the latest migration, then start the API. Hosts like Render say
-# which port to listen on in $PORT; locally it is 8000.
-CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Bring the database up to the latest migration, create the demo account if DEMO_EMAIL is set,
+# then start the API. Hosts like Render say which port to listen on in $PORT; locally it's 8000.
+CMD ["sh", "-c", "alembic upgrade head && python -m app.demo && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

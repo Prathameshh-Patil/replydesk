@@ -69,3 +69,29 @@ def test_hosted_postgres_urls_get_the_psycopg_driver():
     assert Settings(database_url="postgres://u:p@h/db").database_url.startswith(
         "postgresql+psycopg://"
     )
+
+
+# ---- demo account on start-up ----
+
+
+def test_demo_account_is_created_once(client, db, monkeypatch):
+    from sqlalchemy import func, select
+
+    from app.demo import ensure_demo_user
+    from app.models import User
+
+    monkeypatch.setattr(settings, "demo_email", "demo@replydesk.dev")
+    ensure_demo_user()
+    ensure_demo_user()  # a restart doesn't make a second one
+    assert db.scalar(select(func.count()).select_from(User)) == 1
+    assert client.post("/auth/demo").status_code == 200
+
+
+def test_no_demo_account_without_demo_email(db):
+    from sqlalchemy import func, select
+
+    from app.demo import ensure_demo_user
+    from app.models import User
+
+    ensure_demo_user()
+    assert db.scalar(select(func.count()).select_from(User)) == 0

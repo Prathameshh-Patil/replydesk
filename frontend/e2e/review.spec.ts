@@ -42,7 +42,7 @@ test("a customer message moves through all four steps and reaches review", async
   await expect(page.getByRole("heading", { name: "Message received" })).toBeVisible();
   const ticketUrl = await page.getByRole("link", { name: /Watch it/ }).getAttribute("href");
 
-  // The one-click demo login (run.sh points DEMO_EMAIL at the test account).
+  // The one-click demo login (the API creates the DEMO_EMAIL account on start-up).
   await page.goto("/login");
   await page.getByRole("button", { name: /Try the demo/ }).click();
   await expect(page.getByRole("button", { name: "Log out" })).toBeVisible();
