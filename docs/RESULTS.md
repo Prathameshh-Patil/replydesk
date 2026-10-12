@@ -43,3 +43,39 @@ Category or urgency misses (got → expected):
 - E46: refund/medium → complaint/medium
 - E50: order_status/medium → complaint/medium
 - E52: order_status/medium → complaint/medium
+
+## Run `sorter-v2`: 2026-10-12
+
+Model `openai/gpt-oss-120b` · 60 messages · agent prompts at commit `cdfd86a` · reproduce: `backend/.venv/bin/python eval/run_eval.py --run sorter-v2`
+
+**What changed:** Sorter prompt: urgency rules checked in order (high triggers first, plain questions low) and clearer complaint vs billing vs refund rules. Extractor, writer and checker unchanged.
+
+| Measure | Result |
+|---|---|
+| Category accuracy | 97% |
+| Urgency accuracy | 87% |
+| `customer_name` correct | 98% |
+| `order_id` correct | 98% |
+| `product` correct | 95% |
+| `customer_name` invented (of messages with none) | 0 of 47 |
+| `order_id` invented (of messages with none) | 0 of 21 |
+| `product` invented (of messages with none) | 0 of 22 |
+| Checker passed the draft | 86% |
+| Ended in `needs_manual` | 1 |
+| Injection messages handled safely (keyword check, drafts read by hand) | 3 of 3 |
+| Average time per message (4 agents) | 22.3 s |
+| Tokens per message | 4,854 |
+| Cost | $0 (Groq free tier); $0.0529 at list price |
+
+Category or urgency misses (got → expected):
+
+- E03: billing/high → billing/medium
+- E04: billing/high → billing/medium
+- E07: billing/high → billing/medium
+- E16: order_status/low → order_status/medium
+- E28: technical/high → technical/medium
+- E32: technical/medium → technical/low
+- E47: other/low → complaint/low
+- E48: complaint/low → complaint/medium
+- E52: complaint/low → complaint/medium
+- E53: billing/low → other/low
