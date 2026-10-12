@@ -31,3 +31,9 @@ test-results/
 .idea/
 *.swp
 .DS_Store
+
+# Personal study notes live outside the repo (~/FrontDesk/replydesk-notes)
+docs/LEARN.md
+docs/PITCH.md
+docs/INTERVIEW.md
+notes/
