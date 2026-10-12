@@ -4,11 +4,12 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, UploadFile, status
 from pydantic import ValidationError
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.database import get_db
 from app.core.security import get_current_user
+from app.core.settings import settings
 from app.models import Ticket, TicketStatus, User
 from app.pipeline import reset_agent_results, run_pipeline
 from app.schemas.ticket import (
@@ -27,6 +28,25 @@ MAX_IMPORT_ROWS = 1000
 REQUIRED_COLUMNS = {"customer_name", "customer_email", "subject", "body"}
 
 
+def check_daily_limit(db: Session, new_tickets: int = 1) -> None:
+    """On the live demo, refuse new tickets once today's limit is reached (429 Too Many Requests).
+
+    Each ticket costs four model calls, and the demo runs on a free quota anyone could use up.
+    """
+    limit = settings.daily_ticket_limit
+    if not limit:
+        return
+    midnight = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
+    today = db.scalar(select(func.count()).select_from(Ticket).where(Ticket.created_at >= midnight))
+    if today + new_tickets > limit:
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            f"The live demo takes {limit} new messages a day and today's are used up "
+            "(this keeps the free AI quota from running out). Please try again tomorrow, "
+            "or run ReplyDesk on your own machine: see the README.",
+        )
+
+
 @router.post("", response_model=TicketOut, status_code=status.HTTP_201_CREATED)
 def create_ticket(
     data: TicketCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
@@ -35,6 +55,7 @@ def create_ticket(
 
     Returns immediately; the agents run in the background after the response is sent.
     """
+    check_daily_limit(db)
     ticket = Ticket(**data.model_dump())
     db.add(ticket)
     db.commit()
@@ -82,6 +103,7 @@ def import_tickets(
             continue
         tickets.append(Ticket(**data.model_dump()))
 
+    check_daily_limit(db, len(tickets))
     # One transaction: either all valid rows are saved, or (on a crash) none are.
     db.add_all(tickets)
     db.commit()
