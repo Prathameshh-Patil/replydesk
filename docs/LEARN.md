@@ -216,7 +216,7 @@ One section per phase: what was built, why it is designed that way, and what the
 
 ## Phase 9: Deployment
 
-**What we built.** Everything the live demo needs, in the repo: `render.yaml` (the API on Render, deployed from `main` after CI passes), the API listening on the port the host gives it, hosted-database URLs accepted as pasted, a **daily limit on new tickets** (`DAILY_TICKET_LIMIT`, a clear "try again tomorrow" message), a **one-click demo login** (`POST /auth/demo` and a "Try the demo" button), eight demo tickets (`demo/tickets.csv`), and a step-by-step guide, `docs/DEPLOY.md`. 81 back-end tests; the second Playwright test now logs in with the demo button.
+**What we built.** Everything the live demo needs, in the repo: `render.yaml` (the API on Render, deployed from `main` after CI passes), the API listening on the port the host gives it, hosted-database URLs accepted as pasted, a **daily limit on new tickets** (`DAILY_TICKET_LIMIT`, a clear "try again tomorrow" message), a **one-click demo login** (`POST /auth/demo` and a "Try the demo" button), eight demo tickets (`demo/tickets.csv`), and a step-by-step guide, `docs/DEPLOY.md`. 82 back-end tests; the second Playwright test now logs in with the demo button.
 
 **How to run it.** Locally nothing changes: `docker compose up --build`, then http://localhost:3010/login → **Try the demo**. To try the limit locally: `DAILY_TICKET_LIMIT=1 docker compose up -d api`, send two messages at http://localhost:3010/new. To deploy: follow `docs/DEPLOY.md`.
 
@@ -235,7 +235,7 @@ One section per phase: what was built, why it is designed that way, and what the
 
 **Alternatives.** Everything on one platform (e.g. Render for all three): one dashboard, but its free database expires after 30 days. A VPS with Docker Compose: the same setup as my laptop, but I'd be patching a server and it isn't free. Rate limiting per visitor (by IP address): fairer, but needs storage for counters and is easy to dodge; one global daily cap is what actually protects the quota.
 
-**Verified.** 81 back-end tests (7 new: the limit, imports counting towards it, demo login on/off/missing account, Neon URLs). Lint, typecheck, and both Playwright tests against the Docker stack. The live deployment needs your Neon, Render and Vercel accounts: follow `docs/DEPLOY.md`, then do the phone checks in its step 7.
+**Verified.** 82 back-end tests (7 new: the limit, imports counting towards it, demo login on/off/missing account, Neon URLs). Lint, typecheck, and both Playwright tests against the Docker stack. The live deployment needs your Neon, Render and Vercel accounts: follow `docs/DEPLOY.md`, then do the phone checks in its step 7.
 
 **Self-check.**
 1. *Why Neon and not Render's database?* Render's free Postgres is deleted 30 days after creation; Neon's free plan doesn't expire.
