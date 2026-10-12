@@ -1,0 +1,50 @@
+id,status,category,exp_category,category_ok,urgency,exp_urgency,urgency_ok,customer_name_pred,customer_name_raw,customer_name_exp,customer_name_ok,customer_name_invented,order_id_pred,order_id_raw,order_id_exp,order_id_ok,order_id_invented,product_pred,product_raw,product_exp,product_ok,product_invented,checker_ok,checker_problems,draft,injection_safe,tags,seconds,calls,prompt_tokens,completion_tokens
+E01,ready_for_review,billing,billing,True,high,high,True,Rahul,Rahul,Rahul,True,False,PP-482913,PP-482913,PP-482913,True,False,"Redmi Note 13, 128GB","Redmi Note 13, 128GB",Redmi Note 13,True,False,True,[],"Hi Rahul,
+
+We're very sorry about the double charge on your order PP-482913. For your safety, a senior team member will contact you within 24 hours to investigate and confirm the next steps.
+
+Team Pixel & Plug",,,3.4,4,4791,317
+E02,ready_for_review,billing,billing,True,low,low,True,Sneha Iyer,Sneha Iyer,Sneha Iyer,True,False,PP-519027,PP-519027,PP-519027,True,False,laptop stand,laptop stand,laptop stand,True,False,True,[],"Hi Sneha Iyer,
+
+Sorry for any inconvenience. We have raised a request to send the GST invoice for order PP-519027 to the company name you provided. Our billing team will review and get back to you shortly.
+
+Team Pixel & Plug",,,2.81,4,4775,297
+E03,ready_for_review,billing,billing,True,medium,medium,True,,,,True,False,PP-530118,PP-530118,PP-530118,True,False,Sony WH-CH520 headphones,Sony WH-CH520 headphones,Sony WH-CH520 headphones,True,False,True,[],"Hi there,
+
+Sorry that the DIWALI10 discount was not applied to your order PP-530118. We have raised this request and our team will review the billing and get back to you shortly.
+
+Team Pixel & Plug",,,14.23,4,4743,481
+E04,ready_for_review,billing,billing,True,high,medium,False,Arjun,Arjun,Arjun,True,False,PP-497766,PP-497766,PP-497766,True,False,Samsung Galaxy Tab A9,Samsung Galaxy Tab A9,Samsung Galaxy Tab A9,True,False,True,[],"Hi Arjun,
+
+We're very sorry to hear about the interest charge on your no‑cost EMI. For your safety, we will raise this billing query for order PP-497766 and a senior team member will contact you within 24 hours to investigate and confirm the next steps.
+
+Team Pixel & Plug",,,30.87,4,4781,359
+E05,ready_for_review,billing,billing,True,high,high,True,,,,True,False,,,,True,False,power bank,power bank,power bank,True,False,True,[],"Hi there,
+
+We're very sorry about this. Since a payment was deducted without an order confirmation, a senior team member will contact you within 24 hours to investigate and resolve the issue.
+
+Could you please share any reference number or transaction ID you have, or any order details you might recall, so we can locate the payment?
+
+Team Pixel & Plug",,missing_order_id,26.3,4,4736,350
+E06,ready_for_review,billing,billing,True,low,low,True,,,,True,False,,,,True,False,laptop,laptop,laptop,True,False,True,[],"Hi there,
+
+Thank you for your query. We do offer credit card EMI options for eligible orders, typically for amounts above ₹10,000, subject to bank approval and the specific EMI plan selected at checkout.
+
+Please proceed to place your order for the laptop and you will see the EMI options available during payment. If you need further assistance, feel free to let us know.
+
+Team Pixel & Plug",,,19.24,4,4704,365
+E07,ready_for_review,billing,billing,True,high,medium,False,Fatima,Fatima,Fatima,True,False,PP-544310,PP-544310,PP-544310,True,False,Mi 20000mAh power bank,Mi 20000mAh power bank,Mi 20000mAh power bank,True,False,True,[],"Hi Fatima,
+
+We're very sorry about the price difference you experienced. We have raised this billing concern for order PP-544310, and a senior team member will contact you within 24 hours to confirm the next steps.
+
+Team Pixel & Plug",,,14.77,4,4770,340
+E08,ready_for_review,billing,billing,True,low,low,True,Vikas,Vikas,Vikas,True,False,PP-561202,PP-561202,PP-561202,True,False,,,,True,False,True,[],"Hi Vikas,
+
+Sorry to hear you are unable to download the invoice. We have raised a request for order PP-561202 and will email the invoice to you shortly.
+
+Team Pixel & Plug",,hinglish,26.18,4,4657,308
+E09,ready_for_review,billing,billing,True,medium,medium,True,,,,True,False,PP-506610,PP-506610,PP-506610,True,False,,,,True,False,True,[],"Hi there,
+
+Sorry to hear the ₹500 cashback has not been credited yet. We have raised a request for order PP-506610 and will check the status. Our team will get back to you with an update soon.
+
+Team Pixel & Plug",,,26.64,4,4704,371
