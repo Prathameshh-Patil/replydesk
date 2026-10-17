@@ -43,7 +43,7 @@ Three pieces need hosting, each on a free tier:
 
 ### 4. Connect them (CORS)
 
-In Render → the service → **Environment**, set `CORS_ORIGINS` to the exact Vercel address (`https://replydesk.vercel.app`, no trailing slash) and save; Render redeploys. Without this the browser blocks every call from the front end to the API.
+In Render → the service → **Environment**, set `CORS_ORIGINS` to the exact Vercel address (for example `https://replydesk-kappa.vercel.app`, no trailing slash) and save; Render redeploys. Without this the browser blocks every call from the front end to the API.
 
 ### 5. Demo tickets
 
