@@ -75,6 +75,20 @@ docker compose up --build
 
 The API creates the demo staff account on start-up, so just **Log in → Try the demo**, and write in as a customer at http://localhost:3010/new. API docs: http://localhost:8010/docs. Without a Groq key, `AGENT_CLIENT=fake` gives canned agent answers so the whole flow still works.
 
+### Environment variables
+
+All of them are listed, with comments, in [`.env.example`](.env.example). The ones you're likely to touch:
+
+| Variable | What it does | Default |
+|---|---|---|
+| `LLM_API_KEY` | Your Groq key (secret, only in `.env`) | empty |
+| `AGENT_CLIENT` | `llm` calls the model; `fake` returns canned answers | `llm` |
+| `LLM_BASE_URL` / `LLM_MODEL` | Any OpenAI-compatible API and model | Groq, `openai/gpt-oss-120b` |
+| `DATABASE_URL` | SQLAlchemy URL for PostgreSQL (Compose sets it for you) | local Docker database |
+| `JWT_SECRET` | Signs login tokens; the API refuses to start in production with the dev default | dev-only value |
+| `CORS_ORIGINS` | Front-end addresses allowed to call the API | `http://localhost:3010` |
+| `DAILY_TICKET_LIMIT` / `DEMO_EMAIL` | Live-demo guard rails: daily cap and one-click demo login | `0` (no cap) / `demo@replydesk.dev` |
+
 ## Run the tests
 
 ```sh
